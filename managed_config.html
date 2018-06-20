@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8"> 
+	<link rel="dns-prefetch" href="//rubiconproject.com">
+	<link href="style/rp_tool.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Martel+Sans:300,400,600,700,800" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Oswald:400,500,600,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800" rel="stylesheet">
+	<script src="js/jquery-3.3.1.min.js" type="text/javascript"></script>  
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.0/xlsx.full.min.js"></script>
+	<script src="js/strings.js"></script>
+	<script src="js/controller.js"></script>
+	<script src="js/setup.js"></script>
+	<script src="js/message.js"></script>
+	<script src="js/output.js"></script>
+</head>
+<body>
+<header class="header">
+	<div class="header_container">
+		<img height="45" src="http://rubiconproject.com/wp-content/themes/Phase4/images/RubiconProject_white.svg"><div class="header_container_title">MANAGED CONFIGURATION TOOL</div>
+	</div>
+</header>
+<main class="main">
+	<div class="main_container">
+		<div class="menu_header">
+			<div class="menu_header_container">
+				<div class="toogle tab" id="toogle_file" onclick="SETUP.setFormToggle('file')">UPLOAD</div> 
+				<div class="toogle" id="toogle_custom" onclick="SETUP.setFormToggle('custom')">CUSTOMIZE</div>
+				<div class="download_container unavailable" id="download_button" onclick="CONTROLLER.downloadFile()">
+					<span>DOWNLOAD <img id="download_image" height="15" width="15" src="images/download-unavailable.png"/></span>
+				</div>
+				<div class="menu_error"><div class="menu_error-close" onclick="MESSAGE.resetMessage()">x</div><div class="menu_error-icon"><img height="25px" width="25px" src="images/error.png"/></div><div class="menu_error-text" id="errorlog"></div></div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="menu_item selected" id="mi_file">
+				<div class="menu_item_drop" id="fileinput">
+					<img class="menu_item_drop-icon" id="drop-icon" height="150" width="150" src="images/upload.png"/>
+					<p class="menu_item_drop-text"><span class="menu_item_drop-textclickable" id="fileinput-click">Choose a file</span><span id="droptext"> or drag it here</span></p>
+				</div>
+				<div class="menu_item_drop hidden" id="filedisplay">
+					<img class="menu_item_drop-icon" height="150" width="150" id="uploaded-file" src="images/csv_file.png"/>
+					<div class="menu_item_drop_display" id="displayFile"></div>
+					<div class="menu_item_drop_change" id="changefile" onclick="CONTROLLER.resetUpload()">CHANGE FILE</div>
+				</div>
+				<input type="file" id="file" class="hidden" onchange="CONTROLLER.readFile(event)"/>
+			</div>
+			<div class="menu_item" id="mi_custom">
+				<div class="menu_item_sidebar menu_item_section">
+					<div class="menu_item_sidebar_container">
+						<div class="menu_item_sidebar_title">OPTIONS</div>
+						<div class="menu_item_sidebar_version" id="version-toggle">
+							<div class="menu_item_sidebar_version-title">PREBID VERSION</div>
+							<label class="menu_item_sidebar_version-switch">
+								<input id="version-value" type="checkbox" checked onchange="SETUP.toggleVersion(event)"><span class="switch_value"></span><span class="switch_slider"></span>
+							</label>
+						</div>
+						<div class="menu_item_sidebar_border"></div>
+						<div class="menu_item_sidebar_option selected" id="sidebar_bid" onclick="SETUP.setCustomToggle('bid')">BID ADAPTERS</div>
+						<div class="menu_item_sidebar_option" id="sidebar_analytics" onclick="SETUP.setCustomToggle('analytics')">ANALYTICS ADAPTERS</div>
+						<div class="menu_item_sidebar_option" id="sidebar_modules" onclick="SETUP.setCustomToggle('modules')">MODULES</div>
+						<div class="menu_item_sidebar_option" id="sidebar_precision" onclick="SETUP.setCustomToggle('precision')">GRANULARITY</div>
+						<div class="menu_item_sidebar_option" id="sidebar_other" style="display:none !important;" onclick="SETUP.setCustomToggle('other')">OTHER</div>
+					</div>
+				</div>
+				<div class="menu_item_select menu_item_section">
+					<div class="menu_item_select_container">
+						<div class="menu_item_select_list selected" id="select_bid">
+			            	<div class="menu_item_select_title">SELECT BID ADAPTERS TO INLUDE</div>
+			            	<div class="menu_item_select_bid-searchbar"><span><img height="20" widht="20" src="images/search-icon.png"/></span><input type="text" onchange="CONTROLLER.searchBids(event)" onkeydown="CONTROLLER.searchBids(event)" onkeyup="CONTROLLER.searchBids(event)"/></div>
+			            	<div class="menu_item_select-preview" id="bid_preview"></div>
+			            	<div class="menu_item_select_bid" id="bid_contain">
+			            		<script type="text/javascript" src="js/bidders.js"></script>
+			            		<script>
+			            			SETUP.setupBidders();
+			            		</script>
+			              </div>
+			              <div class="menu_item_select_bid-scroll" id="bid_scroll"><img height="30" width="30" src="images/arrow.png"/></div>
+			            </div>
+						<div class="menu_item_select_list" id="select_analytics">
+							<div class="menu_item_select_title">SELECT ANALYTIC ADAPTERS TO INLUDE</div>
+							<div class="menu_item_select-preview" id="analytics_preview"></div>
+							<div class="menu_item_select_analytics" id="analytics_contain">
+								<script type="text/javascript" src="js/analytics.js"></script>
+			            		<script>
+			            			 SETUP.setupAnalytics();
+			            		</script>
+							</div>
+							<div class="menu_item_select_analytics-scroll" id="analytics_scroll"><img height="30" width="30" src="images/arrow.png"/></div>
+						</div>
+						<div class="menu_item_select_list" id="select_modules">
+							<div class="menu_item_select_title">SELECT MODULES TO INLUDE</div>
+							<div class="menu_item_select-preview" id="modules_preview"></div>
+							<div class="menu_item_select_modules" id="modules_contain">
+								<script type="text/javascript" src="js/modules.js"></script>
+			            		<script>
+			            			SETUP.setupModules();
+			            		</script>
+							</div>
+							<div class="menu_item_select_modules-scroll" id="modules_scroll"><img height="30" width="30" src="images/arrow.png"/></div>
+						</div>
+						<div class="menu_item_select_list" id="select_precision">
+							<div class="menu_item_select_title">SELECT PRICE GRANULARITY</div>
+							<div class="menu_item_select_granularity" id="granularity_contain">
+								<label class="menu_item_select_modules-check">Low<input class="granularity_check" id="gran-low" type="checkbox" onchange="CONTROLLER.updatePrecision('low')"><span class="checkmark"></span></label>
+								<label class="menu_item_select_modules-check">Medium<input class="granularity_check" id="gran-med" checked type="checkbox" onchange="CONTROLLER.updatePrecision('med')"><span class="checkmark"></span></label>
+								<label class="menu_item_select_modules-check">High<input class="granularity_check" id="gran-high" type="checkbox" onchange="CONTROLLER.updatePrecision('high')"><span class="checkmark"></span></label>
+								<label class="menu_item_select_modules-check">Auto<input class="granularity_check" id="gran-auto" type="checkbox" onchange="CONTROLLER.updatePrecision('auto')"><span class="checkmark"></span></label>
+								<label class="menu_item_select_modules-check">Dense<input class="granularity_check" id="gran-dense" type="checkbox" onchange="CONTROLLER.updatePrecision('dense')"><span class="checkmark"></span></label>
+								<label class="menu_item_select_modules-check">Custom<input class="granularity_check" id="gran-custom" type="checkbox" onchange="CONTROLLER.updatePrecision('custom')"><span class="checkmark"></span></label>
+								<div class="module_precision_container" id="bucket_contain">
+									<div class="module_precision_title">BUCKETS</div>
+									<div class="module_precision_bucket" id="bucket_1">
+										<label class="module_precision_bucket-text text_space6">Enter precision: <input value="0" step="1" type="number" min="0" onchange="CONTROLLER.precBool(event.target.parentNode.parentNode,true)" onkeyup="CONTROLLER.precBool(event.target.parentNode.parentNode,true)"></label>
+										<label class="module_precision_bucket-text text_space4">Enter minimum: <input value="0" step=".1" type="number" min="0" onchange="CONTROLLER.precBool(event.target.parentNode.parentNode,true)" onkeyup="CONTROLLER.precBool(event.target.parentNode.parentNode,true)"></label>
+										<label class="module_precision_bucket-text text_space1">Enter maximum: <input value="0" step=".1" type="number" min="0" onchange="CONTROLLER.precBool(event.target.parentNode.parentNode,true)" onkeyup="CONTROLLER.precBool(event.target.parentNode.parentNode,true)"></label>
+										<label class="module_precision_bucket-text">Enter increment: <input value="0" step=".1" type="number" min="0" onchange="CONTROLLER.precBool(event.target.parentNode.parentNode,true)" onkeyup="CONTROLLER.precBool(event.target.parentNode.parentNode,true)"></label>
+									</div>
+									<div class="module_precision_addbucket" id="mp_addbucket" onclick="CONTROLLER.appendBucket()">Add Bucket</div>
+								</div>
+							</div>
+							<div class="menu_item_select_granularity-scroll" id="granularity_scroll"><img height="30" width="30" src="images/arrow.png"/></div>
+						</div>
+						<div class="menu_item_select_list" id="select_other">
+							<div class="menu_item_select_title">Select Else to Include</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</main>
+<footer class="footer">
+	<div class="header_container">
+		Rubicon Project is a global technology company on a mission to Change Advertising for Good.<br/>© Copyright 2018 Rubicon Project, Inc. All rights reserved. Privacy Statement.
+	</div>
+</footer>
+<div class="save_modal">
+	<div class="save_container" id="save-box">
+		<div class="save_container-input">
+			<div class="save_container-title">DOWNLOAD</div>
+			<p>Please enter a file name to save the file.</p>
+			<label>Save As: <input id="save-name" type="text" onkeyup="CONTROLLER.downloadKeyCheck(event)"/><span>.js</span></label>
+			<div class="save_container-error" id="save-error">ERROR: Filename must be completed</div>
+		</div>
+		<div class="save_container-button cancel" id="save-cancel" onclick="CONTROLLER.closeDownload()">Cancel</div>
+		<div class="save_container-button" id="save-confirm" onclick="CONTROLLER.confirmDownload()""><a id="download-link" href="javascript:void(0);">Ok</a></div>
+	</div>
+</div>
+
+
+<script>
+SETUP.init();
+
+$('#fileinput').on('dragover',
+    function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).parent().addClass("drag");
+        $("#drop-icon").attr("src","images/upload-hover.png");
+    }
+).on('dragenter',
+    function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).parent().addClass("drag");
+        $("#drop-icon").attr("src","images/upload-hover.png");
+    }
+).on('dragleave',
+    function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).parent().removeClass("drag");
+        $("#drop-icon").attr("src","images/upload.png");
+    }
+).on('drop',
+    function(e){
+    	e.preventDefault();
+        e.stopPropagation();
+        if(e.originalEvent.dataTransfer){
+            if(e.originalEvent.dataTransfer.files.length) {
+                e.preventDefault();
+                e.stopPropagation();
+               	CONTROLLER.file = e.originalEvent.dataTransfer.files;
+               	CONTROLLER.readFile(e.originalEvent.dataTransfer.files);
+            }   
+        }
+        $(this).parent().removeClass("drag");
+        $("#drop-icon").attr("src","images/upload.png");
+    }
+);
+
+$("#fileinput-click").on("click", function() {
+	$("#file").trigger("click");
+});
+</script>
+
+</body>
+
+</html>

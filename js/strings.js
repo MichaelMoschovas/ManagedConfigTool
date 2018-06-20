@@ -1,0 +1,115 @@
+var STRINGS = {
+	arrToString : function(arr) {
+    	/*-----------------------------------------------------------------------*/
+    	/*-------- Function called to convert array to string for output --------*/
+    	/*-----------------------------------------------------------------------*/
+	    var str = '['; 
+	    //Loop through array values
+	    for (var v in arr) { 
+	    	var s1 = "", s2 = "";
+
+	    	if(v != arr.length-1)  s1 = ",";
+	    	if(v != 0) s2 = ",";
+
+	        if (Array.isArray(arr[v])) {
+	        	//If value is an array, setup output with a return from passing 
+	        	//array to array string constructor function
+	        	str += s2 + STRINGS.arrToString(arr[v]);
+	        }else{
+				var t = Number(arr[v]);
+	        	if(typeof arr[v] == "object"){
+	        		//If value is an object, setup output with a return from passing 
+	        		//object to object string constructor function
+	        		str += s2 + STRINGS.objToString(arr[v]) + '\n';
+	        	}
+	        	else{
+	        		//Construct value as output string
+		            isNaN(t) ? str += '"' + arr[v].toString() + '"' + s1  : str += arr[v].toString() + s1;
+		        }
+	        }
+	    }
+	    str+="]";
+	    return str;
+	},
+	objToString : function(obj) {
+    	/*-----------------------------------------------------------------------*/
+    	/*-------- Function called to convert object to string for output -------*/
+    	/*-----------------------------------------------------------------------*/
+	    var str = '\n{\n';
+	    //Loop through object properties
+	    for (var p in obj) {
+	    	var s1 = "";
+	        if (obj.hasOwnProperty(p)) {
+	        	if(p != obj.length-1)  s1 = ",";
+	        	var t = Number(obj[p]);
+
+	        	if( Array.isArray(obj[p])){
+	        		//If value is an array, setup output with a return from passing 
+	        		//array to array string constructor function
+	        		str += p + ':' + STRINGS.arrToString(obj[p]) + s1 + '\n'
+	        	}else if(typeof obj[p] == "object"){
+	        		//If value is an object, setup output with a return from passing 
+	        		//object to object string constructor function
+	        		str += p + ':' + STRINGS.objToString(obj[p]) + '\n';
+	        	}
+	        	else{
+		            //Construct value as output string
+		            isNaN(t) ? str += p + ': "' + obj[p].toString() + '"' + s1 + '\n' : str += p + ':' + obj[p].toString() + s1 + '\n';
+		        }
+	        }
+	    }
+	    str+="}";
+	    return str;
+	},
+	sortArr: function (a,b) {
+		/*-----------------------------------------------------------------------*/
+    	/*------------ Function called to sort array alphanumerically -----------*/
+    	/*-----------------------------------------------------------------------*/
+		var reA = /[^a-zA-Z]/g,reN = /[^0-9]/g;
+	    var aA = a.replace(reA, "");
+	    var bA = b.replace(reA, "");
+	    if(aA === bA) {
+	        var aN = parseInt(a.replace(reN, ""), 10);
+	        var bN = parseInt(b.replace(reN, ""), 10);
+	        return aN === bN ? 0 : aN > bN ? 1 : -1;
+	    } else {
+	        return aA > bA ? 1 : -1;
+	    }
+	},
+	sortArrAlpha: function (a,b) {
+		/*-----------------------------------------------------------------------*/
+    	/*------------- Function called to sort array alphabetically ------------*/
+    	/*-----------------------------------------------------------------------*/
+		var reN = /[0-9]/g;
+	    var aA = a.replace(reN, "");
+	    var bA = b.replace(reN, "");
+	    
+	    var aN = parseInt(a.replace(reN, ""), 10);
+	    var bN = parseInt(b.replace(reN, ""), 10);
+	    return aN === bN ? 0 : aN > bN ? 1 : -1;
+	},
+	sortArrNum: function (a,b) {
+		/*-----------------------------------------------------------------------*/
+    	/*-------------- Function called to sort array numerically --------------*/
+    	/*-----------------------------------------------------------------------*/
+		var reA = /[a-zA-Z]/gi;
+	    var aA = a.replace(reA, "");
+	    var bA = b.replace(reA, "");
+
+	    return aA > bA ? 1 : -1;
+	},
+	customString: function(m,n){
+    	/*-----------------------------------------------------------------------*/
+    	/*------------- Function called to construct modules string -------------*/
+    	/*-----------------------------------------------------------------------*/
+    	//Loop through array and build string
+    	var v = "";
+    	for(var i = 0; i < n.length; i++){
+    		if(n[i]!=v){
+    			v = n[i];
+	    		(m.length == 0) ? m += ('"'+ n[i]+'"\n') : m += (',"'+ n[i]+'"\n');
+	    	}
+    	}
+    	return m;
+    }
+}
