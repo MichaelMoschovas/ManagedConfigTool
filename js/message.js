@@ -28,7 +28,7 @@ var MESSAGE = {
 		var map = {
 			"{PATTERN}" : (a) ? v[0] : v,
 			"{ADAPTER}" : (a) ? v[1] : v,
-			"{INPUTS}" : list(v),
+			"{INPUTS}" : (a) ? list(v) : v,
 			"{PARAMETERS}" : (a) ? v[2] : v
 		}
 		//Checks existence of each macro and replaces with corresponding value
