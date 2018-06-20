@@ -748,6 +748,16 @@ var BIDDERS = {
     adapter: 'ix',
     state: 'stable'
   },
+  index: {
+    name: 'Index Exchange',
+    code: 'ix',
+    parameters: [
+      'siteID',
+      'size'
+    ],
+    adapter: 'ix',
+    state: 'stable'
+  },
   ix: {
     name: 'Index Exchange',
     code: 'ix',
