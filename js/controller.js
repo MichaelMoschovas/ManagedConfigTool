@@ -738,6 +738,7 @@ var CONTROLLER = {
 		    	fail++;
     			MESSAGE.printMessage(7,obj.slotPattern);
 		    }
+            console.log(fail);
 
     		//Convert object to string and push to pattern array
     		if(fail == 0) {
@@ -745,8 +746,7 @@ var CONTROLLER = {
     			pass++;
     		}
     	}
-    	
-    	return (CONTROLLER.patterns.length > 0 && pass > 0) ? true : false;
+    	    	return (CONTROLLER.patterns.length > 0 && pass > 0) ? true : false;
     },
     checkBidderPattern: function(obj,p){
     	/*-----------------------------------------------------------------------*/

@@ -47,7 +47,7 @@ var MESSAGE = {
     	/*-----------------------------------------------------------------------*/
     	MESSAGE.last = err;console.log(v);
 
-    	if(err!=6 && err!=7 && MESSAGE.last) MESSAGE.resetMessage();
+    	if(err!=6 && err!=7 && err!=8 && MESSAGE.last) MESSAGE.resetMessage();
     	var p = document.createElement("P"), title = document.createElement("SPAN"), contain = document.getElementById("errorlog");
     	title.innerHTML= MESSAGE.title[err].toUpperCase()+":";
     	p.appendChild(title);

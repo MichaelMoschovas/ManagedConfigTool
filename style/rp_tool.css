@@ -226,8 +226,6 @@ body,html {
     right:0px;
     width:calc(100% - 10px);
     font-family: 'Open Sans', Helvetica, sans-serif;
-    max-height: 500px;
-    overflow: auto;
 }
 
 .menu_error-close{
@@ -256,6 +254,8 @@ body,html {
     font-size: 13px;
     width: calc(100% - 100px);
     margin: 0px auto;
+    max-height: 500px;
+    overflow: auto;
 }
 
 .menu_error-text p{
