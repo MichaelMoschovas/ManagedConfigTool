@@ -19,6 +19,7 @@ var CONTROLLER = {
     	/*-----------------------------------------------------------------------*/
     	CONTROLLER.filetype = t;
     	var arr = (CONTROLLER.filetype == "csv" )? CONTROLLER.buildCSVArray(data) : CONTROLLER.buildXLSArray(data);
+        console.log(arr);
     	CONTROLLER.passQA = arr != null ? CONTROLLER.checkArray(arr) : MESSAGE.printMessage(0,null);
     	var c = CONTROLLER.passQA ? CONTROLLER.buildBidObjects(arr) : MESSAGE.printMessage(2,null);
     	if(c){ 
@@ -203,7 +204,8 @@ var CONTROLLER = {
     	/*-----------------------------------------------------------------------*/
     	/*----- Function called to preselect bid adapters from spreadsheet ------*/
     	/*-----------------------------------------------------------------------*/
-    	var els = document.getElementsByClassName("menu_item_select_bid-check"),regex = new RegExp(n,"gi"),found = false;
+        console.log(n);
+    	var els = document.getElementsByClassName("menu_item_select_bid-check"),regex = new RegExp((BIDDERS[n].code+'BidAdapter'),"gi"),found = false;
 
     	for(var i = 0; i < els.length; i++){
     		if(els[i].childNodes[1].id.match(regex)){
@@ -650,18 +652,48 @@ var CONTROLLER = {
 		    				var c = false;
 		    				for(var j = 0; j < obj.bids.length; j++){
 		    					if(obj.bids[j].hasOwnProperty("bidder")&&obj.bids[j].bidder==BIDDERS[b].code){ 
-		    						c=true;
-		    						obj.bids[j].params[a[1][key]] = a[i][key].match(/,/gi) ? a[i][key].split(",") : a[i][key];
+                                    console.log(a[i][key]);
+                                    c=true;
+                                    if(a[i][key].match(/,/gi)){
+                                        var temp = a[i][key].split(","),con = [];
+                                        for(var loop = 0; loop < temp.length; loop++){
+                                            if(temp[loop].match(/\d+x\d+/gi)){
+                                                var sp = temp[loop].split("x");
+                                                for(var t = 0; t < 2; t++){
+                                                    sp[t] = Number(sp[t]);
+                                                }
+                                                con.push(sp);
+                                            }
+                                        }
+                                        obj.bids[j].params[a[1][key]] = con;
+                                    }else{
+    		    						obj.bids[j].params[a[1][key]] = a[i][key].match(/,/gi) ? a[i][key].split(",") : a[i][key];
+                                    }
 		    					}
 		    				}
 		    				if(!c){ 
 		    					var temp = {bidder:BIDDERS[b].code,params:{}};
 		    					obj.bids.push(temp);
-		    					obj.bids[obj.bids.length-1].params[a[1][key]] = a[i][key].match(/,/gi) ? a[i][key].split(",") : a[i][key];
+                                if(a[i][key].match(/,/gi)){
+                                    var temp = a[i][key].split(","),con = [];
+                                    for(var loop = 0; loop < temp.length; loop++){
+                                        if(temp[loop].match(/\d+x\d+/gi)){
+                                            var sp = temp[loop].split("x");
+                                            for(var t = 0; t < 2; t++){
+                                                sp[t] = Number(sp[t]);
+                                            }
+                                            con.push(sp);
+                                        }
+                                    }
+                                    console.log(con);
+                                    obj.bids[obj.bids.length-1].params[a[1][key]] = con;
+                                }else{
+                                    obj.bids[obj.bids.length-1].params[a[1][key]] = a[i][key].match(/,/gi) ? a[i][key].split(",") : a[i][key];
+                                }
 		    					CONTROLLER.preSelectBidder(BIDDERS[b].code);
 		    				}
 		    			}else{
-		    				MESSAGE.printMessage(0,null);
+		    				MESSAGE.printMessage(8,b);
 		    			}
 	    			}
 	    			else if(a[1][key].match(/Div ID/gi)){
