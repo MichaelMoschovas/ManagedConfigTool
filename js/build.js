@@ -1,20 +1,20 @@
 var BUILD = {
     buildArray: function(arg) {
-    	var arr = [];
+        var arr = [];
 
-    	if(arg.match(/,/gi)){
-    		var argS = arg.split(",");
-    		for(var i = 0; i < argS.length; i++){
-    			arr.push(BUILD.buildArray(argS[i]));
-    		}
-    	}else if(arg.match(/\d+x\d+/gi)){
-    		var argS = arg.split("x");
-    		for(var i = 0; i < argS.length; i++){
-    			arr.push(BUILD.buildArray(argS[i]));
-    		}
-    	}else{
-    		return (Number(arg)) ? Number(arg) : arg;
-    	}
+        if (arg.match(/,/gi)) {
+            var argS = arg.split(",");
+            for (var i = 0; i < argS.length; i++) {
+                arr.push(BUILD.buildArray(argS[i]));
+            }
+        } else if (arg.match(/\d+x\d+/gi)) {
+            var argS = arg.split("x");
+            for (var i = 0; i < argS.length; i++) {
+                arr.push(BUILD.buildArray(argS[i]));
+            }
+        } else {
+            return (Number(arg)) ? Number(arg) : arg;
+        }
 
         return arr;
     },
@@ -24,8 +24,7 @@ var BUILD = {
         /*------------- for each row in array excluding header rows -------------*/
         /*------------------ and store values in pattern object -----------------*/
         /*-----------------------------------------------------------------------*/
-        var arr = [],
-            pass = 0;
+        var arr = [],pass = 0;
         //Loop through array starting with third index (first two indexes are header information)
         for (var i = 2; i < a.length; i++) {
             var obj = {};
@@ -40,25 +39,7 @@ var BUILD = {
                     } else if (a[0][key] != "") {
                         //If value exists and top header for cell is not blank, construct new bidder
                         //object with parameter or add paramter to existing bidder object
-                        var b = a[0][key].toLowerCase();
-                        if (BIDDERS.hasOwnProperty(b)) {
-                            if (!obj.hasOwnProperty("bids")) obj.bids = [];
-                            var c = false;
-                            for (var j = 0; j < obj.bids.length; j++) {
-                                if (obj.bids[j].hasOwnProperty("bidder") && obj.bids[j].bidder == BIDDERS[b].code) {
-                                    c = true;
-                                    obj.bids[j].params[a[1][key]] = BUILD.buildArray(a[i][key]);
-                                }
-                            }
-                            if (!c) {
-                                var temp = { bidder: BIDDERS[b].code, params: {} };
-                                obj.bids.push(temp);
-                                obj.bids[obj.bids.length - 1].params[a[1][key]] = BUILD.buildArray(a[i][key]);
-                                CONTROLLER.preSelectBidder(BIDDERS[b].code);
-                            }
-                        } else {
-                            MESSAGE.printMessage(8, b);
-                        }
+                        obj = BUILD.getBidders(obj,a,key,i);
                     } else if (a[1][key].match(/Div.ID/gi)) {
                         //Add div id
                         obj.code = "" + a[i][key];
@@ -104,37 +85,59 @@ var BUILD = {
         }
         return (CONTROLLER.patterns.length > 0 && pass > 0) ? true : false;
     },
-    checkBidderPattern: function(obj,p){
-    	/*-----------------------------------------------------------------------*/
-    	/*--- Function called to check if required bidder params are included ---*/
-    	/*-----------------------------------------------------------------------*/
-    	var b = BIDDERS[obj.bidder];
-    	var c = b.parameters.length, f = "";
-	    for(var j = 0; j < b.parameters.length; j++){
-	    	var m = 0;
-	    	for(var key in obj.params){
-		    	if(key == b.parameters[j]) m++;
-		    }
-		    if(m==0 && f.length == 0) {
-		    	f = [p,obj.bidder,[b.parameters[j]]];
-		    }
-		    else if(m==0){
-		    	f[2].push(b.parameters[j]);
-		    }
-	    }
+    checkBidderPattern: function(obj, p) {
+        /*-----------------------------------------------------------------------*/
+        /*--- Function called to check if required bidder params are included ---*/
+        /*-----------------------------------------------------------------------*/
+        var b = BIDDERS[obj.bidder];
+        var c = b.parameters.length,
+            f = "";
+        for (var j = 0; j < b.parameters.length; j++) {
+            var m = 0;
+            for (var key in obj.params) {
+                if (key == b.parameters[j]) m++;
+            }
+            if (m == 0 && f.length == 0) {
+                f = [p, obj.bidder, [b.parameters[j]]];
+            } else if (m == 0) {
+                f[2].push(b.parameters[j]);
+            }
+        }
 
-	    return (f.length == 0) ? null : f;
+        return (f.length == 0) ? null : f;
     },
-    getBidders:function(){
+    getBidders: function(obj,a,key,i) {
+        console.log(obj);
+
+        var b = a[0][key].toLowerCase();
+        if (BIDDERS.hasOwnProperty(b)) {
+            if (!obj.hasOwnProperty("bids")) obj.bids = [];
+            var c = false;
+            for (var j = 0; j < obj.bids.length; j++) {
+                if (obj.bids[j].hasOwnProperty("bidder") && obj.bids[j].bidder == BIDDERS[b].code) {
+                    c = true;
+                    obj.bids[j].params[a[1][key]] = BUILD.buildArray(a[i][key]);
+                }
+            }
+            if (!c) {
+                var temp = { bidder: BIDDERS[b].code, params: {} };
+                obj.bids.push(temp);
+                obj.bids[obj.bids.length - 1].params[a[1][key]] = BUILD.buildArray(a[i][key]);
+                CONTROLLER.preSelectBidder(BIDDERS[b].code);
+            }
+        } else {
+            MESSAGE.printMessage(8, b);
+        }
+
+        return obj;
+    },
+    getSizes: function() {
 
     },
-    getSizes:function(){
-    	
+    getSlotPattern: function() {
+
     },
-    getSlotPattern:function(){
-    	
-    },
-    getMediaType:function(){
-    	
+    getMediaType: function() {
+
     }
 }
