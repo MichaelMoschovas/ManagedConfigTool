@@ -19,9 +19,8 @@ var CONTROLLER = {
     	/*-----------------------------------------------------------------------*/
     	CONTROLLER.filetype = t;
     	var arr = (CONTROLLER.filetype == "csv" )? CONTROLLER.buildCSVArray(data) : CONTROLLER.buildXLSArray(data);
-        console.log(arr);
     	CONTROLLER.passQA = arr != null ? CONTROLLER.checkArray(arr) : MESSAGE.printMessage(0,null);
-    	var c = CONTROLLER.passQA ? CONTROLLER.buildBidObjects(arr) : MESSAGE.printMessage(2,null);
+    	var c = CONTROLLER.passQA ? BUILD.buildBidObjects(arr) : MESSAGE.printMessage(2,null);
     	if(c){ 
     		CONTROLLER.formCheck(); 
 	    	SETUP.setFormToggle("custom");
@@ -204,7 +203,6 @@ var CONTROLLER = {
     	/*-----------------------------------------------------------------------*/
     	/*----- Function called to preselect bid adapters from spreadsheet ------*/
     	/*-----------------------------------------------------------------------*/
-        console.log(n);
     	var els = document.getElementsByClassName("menu_item_select_bid-check"),regex = new RegExp((BIDDERS[n].code+'BidAdapter'),"gi"),found = false;
 
     	for(var i = 0; i < els.length; i++){
@@ -623,151 +621,6 @@ var CONTROLLER = {
     		if(a[1][i].match(regex)) c++;
     	}
     	return (c >= 5) ?  true : false;
-    },
-    buildBidObjects: function(a){
-    	/*-----------------------------------------------------------------------*/
-    	/*------------ Function called to create each pattern object ------------*/
-    	/*------------- for each row in array excluding header rows -------------*/
-    	/*------------------ and store values in pattern object -----------------*/
-    	/*-----------------------------------------------------------------------*/
-    	var arr = [], pass=0; 
-    	//Loop through array starting with third index (first two indexes are header information)
-    	for(var i = 2; i < a.length; i++){
-    		var obj = {};
-    		//Loop through inner array (cell values from sheet)
-    		for(var key in a[i]){
-    			//Check that index location is not blank and does not equal N/A
-    			if(a[i][key]!="" && !a[i][key].match(/N\/A/gi)){
-	    			//Determine header type from sheet and add data to appropriate location within object
-	    			if(a[1][key].match(/DFP Ad Unit Name/gi)){
-	    				//Add slot pattern value
-	    				obj.slotPattern = a[i][key];
-	    			}
-	    			else if(a[0][key]!=""){
-	    				//If value exists and top header for cell is not blank, construct new bidder
-	    				//object with parameter or add paramter to existing bidder object
-	    				var b = a[0][key].toLowerCase();
-	    				if(BIDDERS.hasOwnProperty(b)){
-		    				if(!obj.hasOwnProperty("bids")) obj.bids = [];
-		    				var c = false;
-		    				for(var j = 0; j < obj.bids.length; j++){
-		    					if(obj.bids[j].hasOwnProperty("bidder")&&obj.bids[j].bidder==BIDDERS[b].code){ 
-                                    console.log(a[i][key]);
-                                    c=true;
-                                    if(a[i][key].match(/,/gi)){
-                                        var temp = a[i][key].split(","),con = [];
-                                        for(var loop = 0; loop < temp.length; loop++){
-                                            if(temp[loop].match(/\d+x\d+/gi)){
-                                                var sp = temp[loop].split("x");
-                                                for(var t = 0; t < 2; t++){
-                                                    sp[t] = Number(sp[t]);
-                                                }
-                                                con.push(sp);
-                                            }
-                                        }
-                                        obj.bids[j].params[a[1][key]] = con;
-                                    }else{
-    		    						obj.bids[j].params[a[1][key]] = a[i][key].match(/,/gi) ? a[i][key].split(",") : a[i][key];
-                                    }
-		    					}
-		    				}
-		    				if(!c){ 
-		    					var temp = {bidder:BIDDERS[b].code,params:{}};
-		    					obj.bids.push(temp);
-                                if(a[i][key].match(/,/gi)){
-                                    var temp = a[i][key].split(","),con = [];
-                                    for(var loop = 0; loop < temp.length; loop++){
-                                        if(temp[loop].match(/\d+x\d+/gi)){
-                                            var sp = temp[loop].split("x");
-                                            for(var t = 0; t < 2; t++){
-                                                sp[t] = Number(sp[t]);
-                                            }
-                                            con.push(sp);
-                                        }
-                                    }
-                                    console.log(con);
-                                    obj.bids[obj.bids.length-1].params[a[1][key]] = con;
-                                }else{
-                                    obj.bids[obj.bids.length-1].params[a[1][key]] = a[i][key].match(/,/gi) ? a[i][key].split(",") : a[i][key];
-                                }
-		    					CONTROLLER.preSelectBidder(BIDDERS[b].code);
-		    				}
-		    			}else{
-		    				MESSAGE.printMessage(8,b);
-		    			}
-	    			}
-	    			else if(a[1][key].match(/Div ID/gi)){
-	    				//Add div id
-	    				obj.code = "" + a[i][key];
-	    			}
-	    			else if(a[1][key].match(/Screen Widths/gi)){
-	    				//Add screen width array
-	    				var sArr = a[i][key].match(/,/gi) ? a[i][key].split(",") : a[i][key];
-	    				for(var key in sArr){
-	    					sArr[key] = sArr[key].match(/x/gi) ? sArr[key].split("x") : sArr[key];
-	    				}
-
-	    				if(a[1][key].match(/1024/gi)){ 
-	    					obj.sizes = sArr;
-	    				} 
-	    				else if(!obj.hasOwnProperty("sizes")){
-							obj.sizes = sArr;
-	    				}
-	    				 
-	    			}
-	    			else if(a[1][key].match(/Media/gi)){
-	    				//Add media type value
-	    				obj.mediaType = "" + a[i][key];
-	    			}
-    			}
-    		}
-
-    		var fail = 0;
-    		if(!obj.hasOwnProperty("bids")){ 
-    			fail++;
-    			MESSAGE.printMessage(7,obj.slotPattern);
-    		}else if(obj.bids.length > 0){
-	    		for(var b = 0; b < obj.bids.length; b++){
-		    		var bt = CONTROLLER.checkBidderPattern(obj.bids[b],obj.slotPattern);
-		    		if(bt != null){ 
-		    			MESSAGE.printMessage(6,bt);
-		    			fail++;
-		    		}
-		    	}
-		    }else{
-		    	fail++;
-    			MESSAGE.printMessage(7,obj.slotPattern);
-		    }
-            console.log(fail);
-
-    		//Convert object to string and push to pattern array
-    		if(fail == 0) {
-    			CONTROLLER.patterns.push(STRINGS.objToString(obj));
-    			pass++;
-    		}
-    	}
-    	    	return (CONTROLLER.patterns.length > 0 && pass > 0) ? true : false;
-    },
-    checkBidderPattern: function(obj,p){
-    	/*-----------------------------------------------------------------------*/
-    	/*--- Function called to check if required bidder params are included ---*/
-    	/*-----------------------------------------------------------------------*/
-    	var b = BIDDERS[obj.bidder];
-    	var c = b.parameters.length, f = "";
-	    for(var j = 0; j < b.parameters.length; j++){
-	    	var m = 0;
-	    	for(var key in obj.params){
-		    	if(key == b.parameters[j]) m++;
-		    }
-		    if(m==0 && f.length == 0) {
-		    	f = [p,obj.bidder,[b.parameters[j]]];
-		    }
-		    else if(m==0){
-		    	f[2].push(b.parameters[j]);
-		    }
-	    }
-
-	    return (f.length == 0) ? null : f;
     },
     getBuckets: function(){
     	/*-----------------------------------------------------------------------*/
