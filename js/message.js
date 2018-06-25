@@ -8,11 +8,22 @@ var MESSAGE = {
 		"Missing the following required input values. {INPUTS}",
 		"Failed to build ad unit patterns. Please review file for errors and/or missing bidder information.",
 		"Bid Adapter could not be found. Please select the appropriate adapter for the following bidder: {ADAPTER}",
-		"Slot pattern {PATTERN} has not been added due to missing bidder information. Bidder {ADAPTER} is missing one or more required parameters. Please check the spreadsheet and fill in the following parameter(s): {PARAMETERS}",
-		"Slot pattern {PATTERN} has not been added due to no corresponding bidder information. Please check the spreadsheet and fill in parameter(s) for at least one bidder.",
+		"Slot pattern(s) {PATTERN} has not been added due to missing bidder information. Bidder {ADAPTER} is missing one or more required parameters. Please check the spreadsheet and fill in the following parameter(s): {PARAMETERS}",
+		"Slot pattern(s) {PATTERN} has not been added due to no corresponding bidder information. Please check the spreadsheet and fill in parameter(s) for at least one bidder.",
 		"Bidder Information could not be found for {ADAPTER}. Please check spreadsheet for errors. If no errors exist, either update bidder.js to include new bidder mapping or download file as is, and manually input bidder values.",
 	],
-	replaceMessageMacros: function(str,v){
+	id : [
+		"file-invalid-{ERRORCODE}",
+		"filetype-invalid-{ERRORCODE}",
+		"header-invalid-{ERRORCODE}",
+		"missing-input-{ERRORCODE}",
+		"build-failure-{ERRORCODE}",
+		"missing-adapter-{ADAPTER}-{ERRORCODE}",
+		"missing-params-{PATTERN}-{ADAPTER}-{ERRORCODE}",
+		"no-bidder-{PATTERN}-{ERRORCODE}",
+		"bidder-unknown-{ADAPTER}-{ERRORCODE}",
+	],
+	replaceMessageMacros: function(str,v,err){
 		/*-----------------------------------------------------------------------*/
     	/*----- Function called to replace macros in predefined messages --------*/
     	/*-----------------------------------------------------------------------*/
@@ -30,7 +41,8 @@ var MESSAGE = {
 			"{PATTERN}" : (a) ? v[0] : v,
 			"{ADAPTER}" : (a) ? v[1] : v,
 			"{INPUTS}" : (a) ? list(v) : v,
-			"{PARAMETERS}" : (a) ? v[2] : v
+			"{PARAMETERS}" : (a) ? v[2] : v,
+			"{ERRORCODE}" : err
 		}
 		//Checks existence of each macro and replaces with corresponding value
 		for(var key in map){
@@ -45,16 +57,18 @@ var MESSAGE = {
     	/*----------- Function called to display and fill error div -------------*/
     	/*----------------------- based on passed value/s -----------------------*/
     	/*-----------------------------------------------------------------------*/
-    	MESSAGE.last = err;console.log(v);
+    	MESSAGE.last = err;
 
-    	if(err!=6 && err!=7 && err!=8 && MESSAGE.last) MESSAGE.resetMessage();
+    	//if(err!=6 && err!=7 && err!=8 && MESSAGE.last) MESSAGE.resetMessage();
     	var p = document.createElement("P"), title = document.createElement("SPAN"), contain = document.getElementById("errorlog");
-    	title.innerHTML= MESSAGE.title[err].toUpperCase()+":";
-    	p.appendChild(title);
-    	contain.appendChild(p);
-    	p.appendChild(document.createTextNode(MESSAGE.replaceMessageMacros(MESSAGE.display[err],v)));
-    	contain.parentNode.style.display="block";
-
+    	if(!document.getElementById(MESSAGE.replaceMessageMacros(MESSAGE.id[err],v,err))){
+	    	p.id = MESSAGE.replaceMessageMacros(MESSAGE.id[err],v,err);
+	    	title.innerHTML= MESSAGE.title[err].toUpperCase()+":";
+	    	p.appendChild(title);
+	    	contain.appendChild(p);
+	    	p.appendChild(document.createTextNode(MESSAGE.replaceMessageMacros(MESSAGE.display[err],v,err)));
+	    	contain.parentNode.style.display="block";
+	    }
     	return false;
     },
     resetMessage : function(){

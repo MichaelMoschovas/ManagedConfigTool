@@ -35,7 +35,7 @@ var STRINGS = {
     	/*-----------------------------------------------------------------------*/
     	/*-------- Function called to convert object to string for output -------*/
     	/*-----------------------------------------------------------------------*/
-	    var str = '\n{\n';
+	    var str = '{\n';
 	    //Loop through object properties
 	    for (var p in obj) {
 	    	var s1 = "";

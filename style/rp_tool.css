@@ -250,7 +250,7 @@ body,html {
 
 .menu_error-text{
 	font-weight: 400;
-    padding: 3px 0px 3px 0px;
+    padding: 3px 20px 3px 0px;
     font-size: 13px;
     width: calc(100% - 100px);
     margin: 0px auto;

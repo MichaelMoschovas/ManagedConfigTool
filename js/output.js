@@ -6,6 +6,7 @@ var OUTPUT = {
 	custom : 'const customConfigObject = { {CUSTOM} };\n',
 	config:'pbjs.setConfig({\n {CONFIG} \n});',
 	granularity: 'priceGranularity: {GRANULARITY}',
+	buckets : '"buckets": [ {BUCKETS} ]',
 	init: function(){
 	    /*-----------------------------------------------------------------------*/
 	    /*------- Function called to construct an exportable string format ------*/
@@ -49,6 +50,7 @@ var OUTPUT = {
     	if(typeof CONTROLLER.precision.value != "object"){
     		OUTPUT.removeCustom();
     		OUTPUT.granularity = OUTPUT.granularity.replace(/{GRANULARITY}/gi,'"'+CONTROLLER.precision.value)+'"';
+    		console.log(OUTPUT.granularity);
     	}else{
     		//If value type object, create const object for granularity buckets
     		OUTPUT.setCustom();
@@ -58,8 +60,45 @@ var OUTPUT = {
 	getGranularity: function(){
 		return OUTPUT.granularity;
 	},
+	getBuckets: function(){
+    	/*-----------------------------------------------------------------------*/
+    	/*-- Function called to construct granularity buckets object as string --*/
+    	/*-----------------------------------------------------------------------*/
+    	var str = "";
+
+    	//Loop through buckets and add each bucket to granularity string
+    	//Each bucket includes precision, min, max, and increment
+    	for(var i =0; i < CONTROLLER.precision.value.buckets.length; i++){
+    		str+="\n{\n";
+    		for(var key in CONTROLLER.precision.value.buckets[i]){
+	    		for(var j =0; j < CONTROLLER.precision.value.buckets[i][key][0].length; j++){
+		    		switch(j){
+		    			case 0:
+		    				str += '"precision" : '+CONTROLLER.precision.value.buckets[i][key][0][j]+',\n';
+		    				break;
+		    			case 1:
+		    				str += '"min" : '+CONTROLLER.precision.value.buckets[i][key][0][j]+',\n';
+		    				break;
+		    			case 2:
+		    				str += '"max" : '+CONTROLLER.precision.value.buckets[i][key][0][j]+',\n';
+		    				break;
+		    			case 3:
+		    				str += '"increment" : '+CONTROLLER.precision.value.buckets[i][key][0][j];
+		    				break;
+		    			default:
+		    				break;
+		    		}
+		    	}
+		    	
+		    }
+	    	str+="\n}\n";
+    	}
+    	
+    	OUTPUT.buckets = OUTPUT.buckets.replace(/{BUCKETS}/gi,str);
+    	return OUTPUT.buckets;
+    },
 	setCustom: function(){
-		OUTPUT.custom = OUTPUT.custom.replace(/{CUSTOM}/gi,CONTROLLER.getBuckets());
+		OUTPUT.custom = OUTPUT.custom.replace(/{CUSTOM}/gi,OUTPUT.getBuckets());
 	},
 	removeCustom: function(){
 		OUTPUT.custom = '';
@@ -78,6 +117,6 @@ var OUTPUT = {
 		p.que ='\n"que": function() {\nrequire("../lib/hpbv2.js")(pbjs);\npbjs.rp.addAdunitPatterns([\n {PATTERNS} ]);\n';
 		p.custom = 'const customConfigObject = { {CUSTOM} };\n';
 		p.config ='pbjs.setConfig({\n {CONFIG} \n});';
-		p.granularity = 'priceGranularity: {GRANULARITY};'
+		p.granularity = 'priceGranularity: {GRANULARITY}'
 	}
 }

@@ -18,7 +18,7 @@ var CONTROLLER = {
     	/*------------ Function called to begin file parsing process ------------*/
     	/*-----------------------------------------------------------------------*/
     	CONTROLLER.filetype = t;
-    	var arr = (CONTROLLER.filetype == "csv" )? CONTROLLER.buildCSVArray(data) : CONTROLLER.buildXLSArray(data);
+    	var arr = (CONTROLLER.filetype == "csv" )? BUILD.buildCSVArray(data) : BUILD.buildXLSArray(data);
     	CONTROLLER.passQA = arr != null ? CONTROLLER.checkArray(arr) : MESSAGE.printMessage(0,null);
     	var c = CONTROLLER.passQA ? BUILD.buildBidObjects(arr) : MESSAGE.printMessage(2,null);
     	if(c){ 
@@ -483,130 +483,6 @@ var CONTROLLER = {
     	MESSAGE.resetMessage();
     	CONTROLLER.formCheck();
     },
-    buildCSVArray: function(d) {
-    	/*-----------------------------------------------------------------------*/
-    	/*-------------- Function called to if file is of type .csv -------------*/
-    	/*------------------ checks if file values are valid --------------------*/
-    	/*------------------- and constructs the data array ---------------------*/
-    	/*-----------------------------------------------------------------------*/
-        var re_valid = /^\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*(?:,\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*)*$/;
-        var re_value = /(?!\s*$)\s*(?:'([^'\\]*(?:\\[\S\s][^'\\]*)*)'|"([^"\\]*(?:\\[\S\s][^"\\]*)*)"|([^,'"\s\\]*(?:\s+[^,'"\s\\]+)*))\s*(?:,|$)/g;
-        
-        //Test using regex and return null if fails
-        if (!re_valid.test(d)) return null;
-
-        //Split data into rows at all new line characters
-        var rows = d.split(/\r\n|\r|\n/), arr = [];
-
-        //Loop through row array
-        for(var line in rows){
-        	var rArr = [], check = false;
-
-        	//Replace function to push individual cell values into array
-	        rows[line].replace(re_value, function(m0, m1, m2, m3) {
-	            if (m1 !== undefined) rArr.push(m1.replace(/\\'/g, "'"));
-	            else if (m2 !== undefined) rArr.push(m2.replace(/\\"/g, '"'));
-	            else if (m3 !== undefined) rArr.push(m3);
-	            return '';
-	        });
-	        //Loop through values in array and check that alphanumeric characters exist
-	        //If not replace with empty string
-	        for(var cell in rArr){
-	        	var alphanum = /([0-9])|([a-z])/gi;
-	        	rArr[cell] = rArr[cell].match(alphanum) ? rArr[cell] : "";
-	        	if(rArr[cell] !="" && rArr[cell] != null) check = true;
- 	        }
-
-	        if(check) {
-	        	//If column length is less than the array length, set column length to array length
-	        	if (CONTROLLER.columns < rArr.length) CONTROLLER.columns = rArr.length; 
-	        	//Push array into array
-	        	arr.push(rArr);
-	        }
-	    }
-	    //Loop through final array and check that all arrays have length of column variable
-	    //If not fill in missing array indexes
-	    for(var r in arr){
-	    	if(arr[r].length < CONTROLLER.columns) arr[r].push("");
-		    if(r == 0){
-		    	for(var c in arr[r]){
-		    		if(c!=0&&arr[r][c]=="") arr[r][c]=arr[r][c-1]
-		    	}
-		    }
-	    }
-
-        return arr;
-    },
-    buildXLSArray: function(d) {
-    	/*-----------------------------------------------------------------------*/
-    	/*----------- Function called to if file is of type .xls/.xlsx ----------*/
-    	/*------------------- and constructs the data array ---------------------*/
-    	/*-----------------------------------------------------------------------*/
-    	var args = [],argsA = [],argsN = [], a =[], n=[], tA="" , tN="" , sheet = d.Sheets[Object.keys(d.Sheets)[0]],arr = [];
-
-    	//Loop through keys in first sheet and push each value to two arrays
-    	for(var key in sheet){
-    		if(key.match(/!./gi)==null){
-    			argsA.push(key);
-    			argsN.push(key);
-    		}
-    	}
-
-    	//Sort array alphanumerically
-    	argsA.sort(STRINGS.sortArr);
-    	//Sort numerically ONLY
-    	argsN.sort(STRINGS.sortArrNum);
-
-    	//Loop through alphanumeric sort and determine/log ALL column key values
-    	for(var i = 0; i < argsA.length; i ++){
-    		var alpha = argsA[i].replace(/[0-9]/gi,"");
-    		if(tA == ""){
-    			a.push(alpha);
-    			tA = alpha;
-    		}
-    		else if(tA != alpha){
-    			a.push(alpha);
-    			tA = alpha;
-    		}
-    	}
-    	//Loop through numeric sort and determine/log ALL row key values
-    	for(var j = 0; j < argsN.length; j ++){
-    		var num = argsN[j].replace(/[a-z]/gi,"");
-    		if(tN == ""){
-    			n.push(num);
-    			tN = num;
-    		}
-    		else if(tN != num){
-    			n.push(num);
-    			tN = num;
-    		}
-    	}
-    	//Loop through all possible row key values
-    	for(var k = 0; k < n.length; k++){
-    		var p = [];
-    		//For each row key loop through all possible column key values
-    		for(var l = 0; l < a.length; l++){
-    			//Construct key e.g. if k is 1 and a is B, key = [B1]
-    			var str = ""+a[l]+n[k];
-    			if(sheet.hasOwnProperty(str)){
-    				//If property exists in object, push value to array
-    				p.push(String(sheet[str].v));
-    			}else if(k==0 && l > 0 && p[p.length-1] != "" && p[p.length-1]){
-    				//If first row and not the first column and the previous index 
-    				//has a value, set this value to the same. This is to account
-    				//for empty bidder cells in the sheet
-					str = ""+a[l-1]+n[k];
-    				p.push(p[p.length-1]);
-    			}else{
-    				//If no conditions met, push empty string
-    				p.push("");
-    			}
-    		}
-    		//Push constructed array to array
-    		arr.push(p);
-    	}
-    	return arr;
-    },
     checkArray: function(a){
     	/*-----------------------------------------------------------------------*/
     	/*------- Function called to check passed array for header values -------*/
@@ -617,46 +493,10 @@ var CONTROLLER = {
     	//Loop through array and match header values
     	//Must equal at least 5 matches to pass
     	for(var i = 0; i < a[1].length; i++){
-    		var regex = /(Sizes for Screen Widths.*\d+px.+)|(DFP Ad Unit Name)|(Div ID)/gi;
+    		var regex = /(Sizes.for.Screen.Widths.*\d+px.+)|(DFP.Ad.Unit.Name)|(Div.ID)/gi;
     		if(a[1][i].match(regex)) c++;
     	}
     	return (c >= 5) ?  true : false;
-    },
-    getBuckets: function(){
-    	/*-----------------------------------------------------------------------*/
-    	/*-- Function called to construct granularity buckets object as string --*/
-    	/*-----------------------------------------------------------------------*/
-    	var b = '"buckets": [', e = "]";
-
-    	//Loop through buckets and add each bucket to granularity string
-    	//Each bucket includes precision, min, max, and increment
-    	for(var i =0; i < CONTROLLER.precision.value.buckets.length; i++){
-    		b+="\n{\n";
-    		for(var key in CONTROLLER.precision.value.buckets[i]){
-	    		for(var j =0; j < CONTROLLER.precision.value.buckets[i][key][0].length; j++){
-		    		switch(j){
-		    			case 0:
-		    				b += '"precision" : '+CONTROLLER.precision.value.buckets[i][key][0][j]+',\n';
-		    				break;
-		    			case 1:
-		    				b += '"min" : '+CONTROLLER.precision.value.buckets[i][key][0][j]+',\n';
-		    				break;
-		    			case 2:
-		    				b += '"max" : '+CONTROLLER.precision.value.buckets[i][key][0][j]+',\n';
-		    				break;
-		    			case 3:
-		    				b += '"increment" : '+CONTROLLER.precision.value.buckets[i][key][0][j];
-		    				break;
-		    			default:
-		    				break;
-		    		}
-		    	}
-		    	
-		    }
-	    	b+="\n}\n";
-    	}
-
-    	return b+e;
     },
     constructJS : function(){
     	return (OUTPUT.init());
