@@ -102,7 +102,7 @@ var STRINGS = {
 	    var aA = a.replace(reA, "");
 	    var bA = b.replace(reA, "");
 
-	    return aA > bA ? 1 : -1;
+	    return Number(aA) > Number(bA) ? 1 : -1;
 	},
 	customString: function(m,n){
     	/*-----------------------------------------------------------------------*/

@@ -146,6 +146,7 @@ var BUILD = {
     		arr.push(p);
     	}
     	return arr;
+
     },
     buildBidObjects: function(a) {
         /*-----------------------------------------------------------------------*/

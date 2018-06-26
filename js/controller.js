@@ -30,6 +30,7 @@ var CONTROLLER = {
             MESSAGE.printMessage(4,null);
             CONTROLLER.resetValues();
 	    }
+        CONTROLLER.setLoader();
     },
     reset: function(){
     	/*-----------------------------------------------------------------------*/
@@ -56,6 +57,7 @@ var CONTROLLER = {
     	/*------------ pass data to corresponding parser function ---------------*/
     	/*-----------------------------------------------------------------------*/
     	MESSAGE.resetMessage();
+        CONTROLLER.setLoader(); 
     	//Set file to target file
     	if(CONTROLLER.file=="") CONTROLLER.file = e;
     	var f = CONTROLLER.file;
@@ -79,6 +81,14 @@ var CONTROLLER = {
 		else{
 			MESSAGE.printMessage(1,null);
 		}
+    },
+    setLoader: function(){
+        var el = document.getElementById("loading-image");
+        if(el.className.match(/hidden/gi)){
+            el.className = el.className.replace(/ hidden/gi,"");
+        }else{
+            el.className += " hidden";
+        }
     },
     searchBids: function(e){
     	/*-----------------------------------------------------------------------*/

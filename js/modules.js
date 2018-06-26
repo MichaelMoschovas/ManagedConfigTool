@@ -15,7 +15,7 @@ var MODULES = {
     state: 'all'
   },
   consentManagement: {
-    name: 'GDPR ConsentManagement',
+    name: 'GDPR Consent Management',
     code: 'consentManagement',
     state: 'stable'
   },
