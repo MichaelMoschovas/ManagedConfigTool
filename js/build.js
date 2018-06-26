@@ -24,6 +24,32 @@ var BUILD = {
         }
         return arr;
     },
+    buildObject: function(arg) {
+        var obj = {}, o = arg.replace(/\{|\}/gi,"");
+
+        var splitAttributes = function(e){
+        	var ret = e.split(",");
+        	return ret;
+        };
+
+        var splitValues = function(e){
+        	var ret = e.split(":");
+        	return ret;
+        };
+
+        if(o.match(/,/gi)) {
+        	var a = splitAttributes(o);
+        	for(var i = 0; i < a.length; i++){
+        		var t = splitValues(a[i]);
+        		obj[t[0]] = t[1];
+        	}
+        }else{
+        	var s = splitValues(o);
+        	obj[s[0]] = s[1];
+        }
+        
+        return obj;
+    },
     buildCSVArray: function(d) {
     	/*-----------------------------------------------------------------------*/
     	/*-------------- Function called to if file is of type .csv -------------*/
@@ -240,13 +266,13 @@ var BUILD = {
             for (var j = 0; j < obj.bids.length; j++) {
                 if (obj.bids[j].hasOwnProperty("bidder") && obj.bids[j].bidder == BIDDERS[b].code) {
                     c = true;
-                    obj.bids[j].params[a[1][key]] = a[i][key].match(/,/gi) ? BUILD.buildArray(a[i][key],true) : BUILD.buildArray(a[i][key],false);
+                    obj.bids[j].params[a[1][key]] = a[i][key].match(/\{.+:.+\}/gi) ? BUILD.buildObject(a[i][key]) : (a[i][key].match(/,/gi) ? BUILD.buildArray(a[i][key],true) : BUILD.buildArray(a[i][key],false));
                 }
             }
             if (!c) {
                 var temp = { bidder: BIDDERS[b].code, params: {} };
                 obj.bids.push(temp);
-                obj.bids[obj.bids.length - 1].params[a[1][key]] = a[i][key].match(/,/gi) ? BUILD.buildArray(a[i][key],true) : BUILD.buildArray(a[i][key],false);
+                obj.bids[obj.bids.length - 1].params[a[1][key]] = a[i][key].match(/\{.+:.+\}/gi) ? BUILD.buildObject(a[i][key]) : (a[i][key].match(/,/gi) ? BUILD.buildArray(a[i][key],true) : BUILD.buildArray(a[i][key],false));
                 CONTROLLER.preSelectBidder(BIDDERS[b].code);
             }
         } else {

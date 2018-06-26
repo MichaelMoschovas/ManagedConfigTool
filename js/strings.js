@@ -110,7 +110,6 @@ var STRINGS = {
     	/*-----------------------------------------------------------------------*/
     	//Loop through array and build string
     	var v = "";
-    	console.log(m);
     	for(var i = 0; i < n.length; i++){
     		if(n[i]!=v){
     			v = n[i];
