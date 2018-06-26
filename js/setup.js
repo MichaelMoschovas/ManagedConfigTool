@@ -191,7 +191,6 @@ var SETUP = {
     		if(h[i].childNodes[1].checked){
     			h[i].childNodes[1].checked = false;
     			h[i].childNodes[1].dispatchEvent(CONTROLLER.event["change"]);
-	    		
 	    	}
     		h[i].style.display = "none";
     	}

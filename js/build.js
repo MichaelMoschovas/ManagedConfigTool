@@ -22,7 +22,6 @@ var BUILD = {
         }else {
             return (Number(arg)) ? Number(arg) : arg;
         }
-
         return arr;
     },
     buildCSVArray: function(d) {
@@ -76,7 +75,6 @@ var BUILD = {
 		    	}
 		    }
 	    }
-
         return arr;
     },
     buildXLSArray: function(d) {
@@ -211,7 +209,6 @@ var BUILD = {
 			fail++;
 			MESSAGE.printMessage(7, obj.slotPattern);
         }
-
         return (fail > 0) ? false : true;
     },
     checkBidderPattern: function(obj, p) {
@@ -232,9 +229,6 @@ var BUILD = {
                 f[2].push(b.parameters[j]);
             }
         }
-
-        console.log(f);
-
         return (f.length == 0) ? null : f;
     },
     getBidders: function(obj,a,key,i) {
@@ -257,7 +251,6 @@ var BUILD = {
         } else {
             MESSAGE.printMessage(8, b);
         }
-
         return obj;
     },
     getSizes: function(obj,a,key,i) {

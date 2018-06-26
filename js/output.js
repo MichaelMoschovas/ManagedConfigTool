@@ -1,12 +1,12 @@
 var OUTPUT = {
 	export:'module.exports = { \n {EXPORTS} \n}};',
-	version: '\t\t"version": "{VERSION}",\n',
-	modules:'\t\t"modules": [\n {MODULES} ],\n',
-	que:'\t\t"que": function() {\nrequire("../lib/hpbv2.js")(pbjs);\npbjs.rp.addAdunitPatterns([\n {PATTERNS} ]);\n',
+	version: '                                "version": "{VERSION}",\n',
+	modules:'\u0009"modules": [\n {MODULES} ],\n',
+	que:'\u0009"que": function() {\nrequire("../lib/hpbv2.js")(pbjs);\npbjs.rp.addAdunitPatterns([\n {PATTERNS} ]);\n',
 	//que:'\n"que": function() {\nvar adUnits = [\n {PATTERNS} ];\n',
-	custom : '\t\tconst customConfigObject = { {CUSTOM} };\n',
+	custom : '\u0009const customConfigObject = { {CUSTOM} };\n',
 	custom : 'const customConfigObject = { {CUSTOM} };\n',
-	config:'\t\tpbjs.setConfig({\n {CONFIG} \n});',
+	config:'\u0009pbjs.setConfig({\n {CONFIG} \n});',
 	granularity: 'priceGranularity: {GRANULARITY}',
 	buckets : '"buckets": [ {BUCKETS} ]',
 	init: function(){
@@ -34,7 +34,6 @@ var OUTPUT = {
 	},
 	buildModItems: function(){
 		var modV = '';
-		console.log(CONTROLLER.analytics);
 		if (CONTROLLER.bids.length > 0) modV += STRINGS.customString(modV, CONTROLLER.bids.sort(STRINGS.sortArrAlpha));
 	    if (CONTROLLER.analytics.length > 0) modV += STRINGS.customString(modV, CONTROLLER.analytics.sort(STRINGS.sortArrAlpha));
 	    if (CONTROLLER.modules.length > 0) modV += STRINGS.customString(modV, CONTROLLER.modules.sort(STRINGS.sortArrAlpha));
@@ -52,7 +51,6 @@ var OUTPUT = {
     	if(typeof CONTROLLER.precision.value != "object"){
     		OUTPUT.removeCustom();
     		OUTPUT.granularity = OUTPUT.granularity.replace(/{GRANULARITY}/gi,'"'+CONTROLLER.precision.value)+'"';
-    		console.log(OUTPUT.granularity);
     	}else{
     		//If value type object, create const object for granularity buckets
     		OUTPUT.setCustom();

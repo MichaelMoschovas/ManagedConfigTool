@@ -162,7 +162,6 @@ var CONTROLLER = {
     	if(el.checked){
     		CONTROLLER.analytics.push(t);
     		CONTROLLER.displayBidsPreview(el,"analytics");
-            console.log(CONTROLLER.analytics);
     	}
     	else{
     		for(var i = 0; i < CONTROLLER.analytics.length; i++){
