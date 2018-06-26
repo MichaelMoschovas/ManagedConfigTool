@@ -29,9 +29,7 @@ var OUTPUT = {
 	},
 	setMods : function(obj){
 		var m = OUTPUT.buildModItems();
-		console.log(m);
 		OUTPUT.modules = OUTPUT.modules.replace(/\{MODULES\}/gi,m );
-		console.log(OUTPUT.modules);
 	},
 	buildModItems: function(){
 		var modV = '';
@@ -47,7 +45,6 @@ var OUTPUT = {
 	setConfig : function(obj){
 		var c = OUTPUT.getGranularity()+OUTPUT.getOther();
 		OUTPUT.config = OUTPUT.config.replace(/\{CONFIG\}/gi,''+ c);
-		console.log(OUTPUT.config);
 	},
 	setGranularity: function(){
 		//Construct precision based on value type
@@ -67,7 +64,7 @@ var OUTPUT = {
 		var str = "";
 		if(CONTROLLER.other.length > 0){
 			for(var i =0; i < CONTROLLER.other.length; i++){
-				str += ",\n"+CONTROLLER.other[i][0] + ": " + CONTROLLER.other[i][1];
+				str += ",\n\t\t\t"+CONTROLLER.other[i][0] + ": " + CONTROLLER.other[i][1];
 			}
 		}
 		return str;
