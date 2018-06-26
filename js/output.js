@@ -1,12 +1,11 @@
 var OUTPUT = {
-	export:'module.exports = { \n {EXPORTS} \n}};',
-	version: '                                "version": "{VERSION}",\n',
-	modules:'\u0009"modules": [\n {MODULES} ],\n',
-	que:'\u0009"que": function() {\nrequire("../lib/hpbv2.js")(pbjs);\npbjs.rp.addAdunitPatterns([\n {PATTERNS} ]);\n',
+	export:'module.exports = {  {EXPORTS} }};',
+	version: '"version": "{VERSION}",',
+	modules:'"modules": [ {MODULES} ],',
+	que:'"que": function() {require("../lib/hpbv2.js")(pbjs);pbjs.rp.addAdunitPatterns([ {PATTERNS} ]);',
 	//que:'\n"que": function() {\nvar adUnits = [\n {PATTERNS} ];\n',
-	custom : '\u0009const customConfigObject = { {CUSTOM} };\n',
-	custom : 'const customConfigObject = { {CUSTOM} };\n',
-	config:'\u0009pbjs.setConfig({\n {CONFIG} \n});',
+	custom : 'const customConfigObject = { {CUSTOM} };',
+	config:'pbjs.setConfig({ {CONFIG} });',
 	granularity: 'priceGranularity: {GRANULARITY}',
 	buckets : '"buckets": [ {BUCKETS} ]',
 	init: function(){
@@ -26,11 +25,13 @@ var OUTPUT = {
 	},
 	setVersion : function(){
 		var v = document.getElementById("version-value").checked ? "stable-1-x" : "0-34-x";
-		OUTPUT.version = OUTPUT.version.replace(/{VERSION}/gi,v);
+		OUTPUT.version = OUTPUT.version.replace(/\{VERSION\}/gi,v);
 	},
 	setMods : function(obj){
 		var m = OUTPUT.buildModItems();
-		OUTPUT.modules = OUTPUT.modules.replace(/{MODULES}/gi,m );
+		console.log(m);
+		OUTPUT.modules = OUTPUT.modules.replace(/\{MODULES\}/gi,m );
+		console.log(OUTPUT.modules);
 	},
 	buildModItems: function(){
 		var modV = '';
@@ -41,24 +42,35 @@ var OUTPUT = {
 	    return modV;
 	},
 	setQue : function(){
-		OUTPUT.que = OUTPUT.que.replace(/{PATTERNS}/gi,CONTROLLER.patterns);
+		OUTPUT.que = OUTPUT.que.replace(/\{PATTERNS\}/gi,CONTROLLER.patterns);
 	},
 	setConfig : function(obj){
-		OUTPUT.config = OUTPUT.config.replace(/{CONFIG}/gi,''+ OUTPUT.getGranularity());
+		var c = OUTPUT.getGranularity()+OUTPUT.getOther();
+		OUTPUT.config = OUTPUT.config.replace(/\{CONFIG\}/gi,''+ c);
+		console.log(OUTPUT.config);
 	},
 	setGranularity: function(){
 		//Construct precision based on value type
     	if(typeof CONTROLLER.precision.value != "object"){
     		OUTPUT.removeCustom();
-    		OUTPUT.granularity = OUTPUT.granularity.replace(/{GRANULARITY}/gi,'"'+CONTROLLER.precision.value)+'"';
+    		OUTPUT.granularity = OUTPUT.granularity.replace(/\{GRANULARITY\}/gi,'"'+CONTROLLER.precision.value)+'"';
     	}else{
     		//If value type object, create const object for granularity buckets
     		OUTPUT.setCustom();
-    		OUTPUT.granularity = OUTPUT.granularity.replace(/{GRANULARITY}/gi,'customConfigObject');
+    		OUTPUT.granularity = OUTPUT.granularity.replace(/\{GRANULARITY\}/gi,'customConfigObject');
     	}
 	},
 	getGranularity: function(){
 		return OUTPUT.granularity;
+	},
+	getOther: function(){
+		var str = "";
+		if(CONTROLLER.other.length > 0){
+			for(var i =0; i < CONTROLLER.other.length; i++){
+				str += ",\n"+CONTROLLER.other[i][0] + ": " + CONTROLLER.other[i][1];
+			}
+		}
+		return str;
 	},
 	getBuckets: function(){
     	/*-----------------------------------------------------------------------*/
@@ -94,30 +106,30 @@ var OUTPUT = {
 	    	str+="\n}\n";
     	}
     	
-    	OUTPUT.buckets = OUTPUT.buckets.replace(/{BUCKETS}/gi,str);
+    	OUTPUT.buckets = OUTPUT.buckets.replace(/\{BUCKETS\}/gi,str);
     	return OUTPUT.buckets;
     },
 	setCustom: function(){
-		OUTPUT.custom = OUTPUT.custom.replace(/{CUSTOM}/gi,OUTPUT.getBuckets());
+		OUTPUT.custom = OUTPUT.custom.replace(/\{CUSTOM\}/gi,OUTPUT.getBuckets());
 	},
 	removeCustom: function(){
 		OUTPUT.custom = '';
 	},
 	setExport:function(){
-		OUTPUT.export = OUTPUT.export.replace(/{EXPORTS}/gi,OUTPUT.combine());
+		OUTPUT.export = OUTPUT.export.replace(/\{EXPORTS\}/gi,OUTPUT.combine());
 	},
 	combine:function(){
 		return (OUTPUT.version+OUTPUT.modules+OUTPUT.que+OUTPUT.custom+OUTPUT.config);
 	},
 	reset: function(){
 		var p = OUTPUT;
-		p.exportOpen ='module.exports = { \n {EXPORTS} \n}};';
-		p.version = '"version": "{VERSION}",\n';
-		p.modules ='"modules": [\n {MODULES} ],';
-		p.que ='\n"que": function() {\nrequire("../lib/hpbv2.js")(pbjs);\npbjs.rp.addAdunitPatterns([\n {PATTERNS} ]);\n';
+		p.export ='module.exports = {\n {EXPORTS} \n\t}\n};';
+		p.version = '\n\t"version": "{VERSION}",\n';
+		p.modules ='\t"modules": [\n {MODULES} \t],';
+		p.que ='\n\t"que": function() {\n\t\trequire("../lib/hpbv2.js")(pbjs);\n\t\tpbjs.rp.addAdunitPatterns([ {PATTERNS} \t\t]);\n';
 		//p.que ='\n"que": function() {\nvar adUnits = [\n {PATTERNS} ];\n';
-		p.custom = 'const customConfigObject = { {CUSTOM} };\n';
-		p.config ='pbjs.setConfig({\n {CONFIG} \n});';
-		p.granularity = 'priceGranularity: {GRANULARITY}'
+		p.custom = '\t\tconst customConfigObject = { {CUSTOM} \t\t};\n';
+		p.config ='\t\tpbjs.setConfig({\n {CONFIG} \n\t\t});';
+		p.granularity = '\t\t\tpriceGranularity: {GRANULARITY}'
 	}
 }

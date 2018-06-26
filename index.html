@@ -63,7 +63,7 @@
 						<div class="menu_item_sidebar_option" id="sidebar_analytics" onclick="SETUP.setCustomToggle('analytics')">ANALYTICS ADAPTERS</div>
 						<div class="menu_item_sidebar_option" id="sidebar_modules" onclick="SETUP.setCustomToggle('modules')">MODULES</div>
 						<div class="menu_item_sidebar_option" id="sidebar_precision" onclick="SETUP.setCustomToggle('precision')">GRANULARITY</div>
-						<div class="menu_item_sidebar_option" id="sidebar_other" style="display:none !important;" onclick="SETUP.setCustomToggle('other')">OTHER</div>
+						<div class="menu_item_sidebar_option" id="sidebar_other" style="" onclick="SETUP.setCustomToggle('other')">OTHER</div>
 					</div>
 				</div>
 				<div class="menu_item_select menu_item_section">
@@ -125,8 +125,16 @@
 							<div class="menu_item_select_granularity-scroll" id="granularity_scroll"><img height="30" width="30" src="images/arrow.png"/></div>
 						</div>
 						<div class="menu_item_select_list" id="select_other">
-							<div class="menu_item_select_title">Select Else to Include</div>
-
+							<div class="menu_item_select_title">SELECT OTHER OPTIONS TO INCLUDE</div>
+							<div class="menu_item_select_other" id="other_contain">
+								<div class="menu_item_select_other-bidsend">
+									<span class="menu_item_select_other-bidsend-title">Enable Send All Bids</span>
+									<label class="menu_item_sidebar_version-switch other">
+										<input id="bidsend-value" type="checkbox" onchange="CONTROLLER.enableSendAll(event)"><span class="switch_value other"></span><span class="switch_slider other"></span></label>
+								</div>
+								<div class="menu_item_select_other-bidtimeout">
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>

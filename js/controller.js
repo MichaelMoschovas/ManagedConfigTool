@@ -7,6 +7,7 @@ var CONTROLLER = {
 	analytics : [],
 	modules : [],
 	precision : {value:"med"},
+    other : [],
 	passQA : false,
 	view : 0,
 	fC : false,
@@ -245,6 +246,18 @@ var CONTROLLER = {
     	CONTROLLER.formCheck();
     	CONTROLLER.logPrecision(t);
     	SETUP.setCustomScrolls();
+    },
+    enableSendAll : function(e){
+        if(e.target.checked){
+            CONTROLLER.other.push(["enableSendAllBids",true]);
+        }else{
+            if(CONTROLLER.other.length > 0){
+                for(var i = 0; i < CONTROLLER.other.length; i++){
+                    if(CONTROLLER.other[i][0]=="enableSendAllBids") CONTROLLER.other.splice(i,1)
+                }
+            }   
+        }
+        console.log(CONTROLLER.other);
     },
    	formCheck: function(){
    		/*-----------------------------------------------------------------------*/

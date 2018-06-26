@@ -186,7 +186,7 @@ var BUILD = {
 
             //Convert object to string and push to pattern array
             if (f) {
-                CONTROLLER.patterns.push(STRINGS.objToString(obj));
+                CONTROLLER.patterns.push(STRINGS.objToString(obj,3));
                 pass++;
             }
         }

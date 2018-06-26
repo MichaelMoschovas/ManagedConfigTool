@@ -1,9 +1,12 @@
 var STRINGS = {
-	arrToString : function(arr) {
+	arrToString : function(arr,f) {
     	/*-----------------------------------------------------------------------*/
     	/*-------- Function called to convert array to string for output --------*/
     	/*-----------------------------------------------------------------------*/
-	    var str = '['; 
+	    var str = '[',tab="";
+	    for(var i = 0; i < f; i++){
+	    	tab+="\t";
+	    }
 	    //Loop through array values
 	    for (var v in arr) { 
 	    	var s1 = "", s2 = "";
@@ -14,13 +17,13 @@ var STRINGS = {
 	        if (Array.isArray(arr[v])) {
 	        	//If value is an array, setup output with a return from passing 
 	        	//array to array string constructor function
-	        	str += s2 + STRINGS.arrToString(arr[v]);
+	        	str += s2 + STRINGS.arrToString(arr[v],f);
 	        }else{
 				var t = Number(arr[v]);
 	        	if(typeof arr[v] == "object"){
 	        		//If value is an object, setup output with a return from passing 
 	        		//object to object string constructor function
-	        		str += s2 + STRINGS.objToString(arr[v]) + '\n';
+	        		str += s2 + STRINGS.objToString(arr[v],f);
 	        	}
 	        	else{
 	        		//Construct value as output string
@@ -31,11 +34,14 @@ var STRINGS = {
 	    str+="]";
 	    return str;
 	},
-	objToString : function(obj) {
+	objToString : function(obj,f) {
     	/*-----------------------------------------------------------------------*/
     	/*-------- Function called to convert object to string for output -------*/
     	/*-----------------------------------------------------------------------*/
-	    var str = '{\n';
+	    var str = '{\n',tab="";
+	    for(var i = 0; i < f; i++){
+	    	tab+="\t";
+	    }
 	    //Loop through object properties
 	    for (var p in obj) {
 	    	var s1 = "";
@@ -46,19 +52,19 @@ var STRINGS = {
 	        	if( Array.isArray(obj[p])){
 	        		//If value is an array, setup output with a return from passing 
 	        		//array to array string constructor function
-	        		str += p + ':' + STRINGS.arrToString(obj[p]) + s1 + '\n'
+	        		str += tab + p + ':' + STRINGS.arrToString(obj[p],f+1) + s1 + '\n';
 	        	}else if(typeof obj[p] == "object"){
 	        		//If value is an object, setup output with a return from passing 
 	        		//object to object string constructor function
-	        		str += p + ':' + STRINGS.objToString(obj[p]) + '\n';
+	        		str += tab + p + ':' + STRINGS.objToString(obj[p],f+1) + '\n';
 	        	}
 	        	else{
 		            //Construct value as output string
-		            isNaN(t) ? str += p + ': "' + obj[p].toString() + '"' + s1 + '\n' : str += p + ':' + obj[p].toString() + s1 + '\n';
+		            isNaN(t) ? str += tab + p + ': "' + obj[p].toString() + '"' + s1 + '\n' : str += tab+ p + ':' + obj[p].toString() + s1 + '\n';
 		        }
 	        }
 	    }
-	    str+="}";
+	    str+=tab.replace("\t","")+"}";
 	    return str;
 	},
 	sortArr: function (a,b) {
@@ -104,10 +110,11 @@ var STRINGS = {
     	/*-----------------------------------------------------------------------*/
     	//Loop through array and build string
     	var v = "";
+    	console.log(m);
     	for(var i = 0; i < n.length; i++){
     		if(n[i]!=v){
     			v = n[i];
-	    		(m.length == 0) ? m += ('"'+ n[i]+'"\n') : m += (',"'+ n[i]+'"\n');
+	    		(m.length == 0) ? m += ('\t\t"'+ n[i]+'"') : m += (',\n\t\t"'+ n[i]+'"');
 	    	}
     	}
     	return m;
@@ -124,5 +131,3 @@ var STRINGS = {
 	//      return (n < 0) ? val + pad : pad + val;
 	}
 }
-
-
