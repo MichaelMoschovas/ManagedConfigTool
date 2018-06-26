@@ -257,7 +257,6 @@ var CONTROLLER = {
                 }
             }   
         }
-        console.log(CONTROLLER.other);
     },
    	formCheck: function(){
    		/*-----------------------------------------------------------------------*/

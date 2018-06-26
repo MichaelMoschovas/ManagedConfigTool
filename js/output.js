@@ -121,7 +121,7 @@ var OUTPUT = {
 	reset: function(){
 		var p = OUTPUT;
 		p.export ='module.exports = {\n {EXPORTS} \n\t}\n};';
-		p.version = '\n\t"version": "{VERSION}",\n';
+		p.version = '\t"version": "{VERSION}",\n';
 		p.modules ='\t"modules": [\n {MODULES} \t],';
 		p.que ='\n\t"que": function() {\n\t\trequire("../lib/hpbv2.js")(pbjs);\n\t\tpbjs.rp.addAdunitPatterns([ {PATTERNS} \t\t]);\n';
 		//p.que ='\n"que": function() {\nvar adUnits = [\n {PATTERNS} ];\n';
