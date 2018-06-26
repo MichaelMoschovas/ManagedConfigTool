@@ -233,6 +233,8 @@ var BUILD = {
             }
         }
 
+        console.log(f);
+
         return (f.length == 0) ? null : f;
     },
     getBidders: function(obj,a,key,i) {
