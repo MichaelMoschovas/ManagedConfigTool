@@ -1,10 +1,12 @@
 var OUTPUT = {
 	export:'module.exports = { \n {EXPORTS} \n}};',
-	version: '"version": "{VERSION}",\n',
-	modules:'"modules": [\n {MODULES} ],',
-	que:'\n"que": function() {\nrequire("../lib/hpbv2.js")(pbjs);\npbjs.rp.addAdunitPatterns([\n {PATTERNS} ]);\n',
+	version: '\t\t"version": "{VERSION}",\n',
+	modules:'\t\t"modules": [\n {MODULES} ],\n',
+	que:'\t\t"que": function() {\nrequire("../lib/hpbv2.js")(pbjs);\npbjs.rp.addAdunitPatterns([\n {PATTERNS} ]);\n',
+	//que:'\n"que": function() {\nvar adUnits = [\n {PATTERNS} ];\n',
+	custom : '\t\tconst customConfigObject = { {CUSTOM} };\n',
 	custom : 'const customConfigObject = { {CUSTOM} };\n',
-	config:'pbjs.setConfig({\n {CONFIG} \n});',
+	config:'\t\tpbjs.setConfig({\n {CONFIG} \n});',
 	granularity: 'priceGranularity: {GRANULARITY}',
 	buckets : '"buckets": [ {BUCKETS} ]',
 	init: function(){
@@ -32,10 +34,10 @@ var OUTPUT = {
 	},
 	buildModItems: function(){
 		var modV = '';
-
-		if (CONTROLLER.bids.length > 0) modV = STRINGS.customString(modV, CONTROLLER.bids.sort(STRINGS.sortArrAlpha));
-	    if (CONTROLLER.analytics.length > 0) modV = STRINGS.customString(modV, CONTROLLER.analytics.sort(STRINGS.sortArrAlpha));
-	    if (CONTROLLER.modules.length > 0) modV = STRINGS.customString(modV, CONTROLLER.modules.sort(STRINGS.sortArrAlpha));
+		console.log(CONTROLLER.analytics);
+		if (CONTROLLER.bids.length > 0) modV += STRINGS.customString(modV, CONTROLLER.bids.sort(STRINGS.sortArrAlpha));
+	    if (CONTROLLER.analytics.length > 0) modV += STRINGS.customString(modV, CONTROLLER.analytics.sort(STRINGS.sortArrAlpha));
+	    if (CONTROLLER.modules.length > 0) modV += STRINGS.customString(modV, CONTROLLER.modules.sort(STRINGS.sortArrAlpha));
 
 	    return modV;
 	},
@@ -115,6 +117,7 @@ var OUTPUT = {
 		p.version = '"version": "{VERSION}",\n';
 		p.modules ='"modules": [\n {MODULES} ],';
 		p.que ='\n"que": function() {\nrequire("../lib/hpbv2.js")(pbjs);\npbjs.rp.addAdunitPatterns([\n {PATTERNS} ]);\n';
+		//p.que ='\n"que": function() {\nvar adUnits = [\n {PATTERNS} ];\n';
 		p.custom = 'const customConfigObject = { {CUSTOM} };\n';
 		p.config ='pbjs.setConfig({\n {CONFIG} \n});';
 		p.granularity = 'priceGranularity: {GRANULARITY}'

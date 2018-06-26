@@ -156,6 +156,23 @@
 <script>
 SETUP.init();
 
+$('#mi_custom').on('dragover',
+    function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        SETUP.setFormToggle("file");
+    }
+);
+$('#filedisplay').on('dragover',
+    function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if(CONTROLLER.file!=""){
+        	CONTROLLER.resetUpload();
+        }
+    }
+);
+
 $('#fileinput').on('dragover',
     function(e) {
         e.preventDefault();
@@ -193,6 +210,8 @@ $('#fileinput').on('dragover',
         $("#drop-icon").attr("src","images/upload.png");
     }
 );
+
+
 
 $("#fileinput-click").on("click", function() {
 	$("#file").trigger("click");

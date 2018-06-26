@@ -1,77 +1,92 @@
 var ANALYTICS = {
   adkernelAdn: {
     name: 'Adkernel Analytics',
-    code: 'adkernelAdn',
+    display: 'Adkernel Analytics',
+    code: 'adkernelAdnAnalyticsAdapter',
     state: 'all'
   },
   adomik: {
     name: 'Adomik Analytics',
+    display: 'Adomik Analytics',
     code: 'google',
     state: 'all'
   },
   adxcg: {
     name: 'Adxcg Analytics',
-    code: 'adxcg',
+    display: 'Adxcg Analytics',
+    code: 'adxcgAnalyticsAdapter',
     state: 'all'
   },
   eplanning: {
     name: 'Eplanning Analytics',
-    code: 'eplanning',
+    display: 'Eplanning Analytics',
+    code: 'eplanningAnalyticsAdapter',
     state: 'stable'
   },
   google: {
     name: 'Google Analytics',
-    code: 'google',
+    display: 'Google Analytics',
+    code: 'googleAnalyticsAdapter',
     state: 'all'
   },
   marsmedia: {
     name: 'Marsmedia Analytics',
-    code: 'marsmedia',
+    display: 'Marsmedia Analytics',
+    code: 'marsmediaAnalyticsAdapter',
     state: 'all'
   },
   pubwise: {
     name: 'PubWise.io Analytics',
-    code: 'pubwise',
+    display: 'PubWise Analytics',
+    code: 'pubwiseAnalyticsAdapter',
     state: 'all'
   },
   pulsepoint: {
     name: 'PulsePoint',
-    code: 'pulsepoint',
+    display: 'PulsePoint Analytics',
+    code: 'pulsepointAnalyticsAdapter',
     state: 'all'
   },
   realvu: {
     name: 'Realvu Analytics',
-    code: 'realvu',
+    display: 'Realvu Analytics',
+    code: 'realvuAnalyticsAdapter',
     state: 'stable'
   },
   roxot: {
     name: 'Prebid Analytics by Roxot',
-    code: 'roxot',
+    display: 'Roxot Analytics',
+    code: 'roxotAnalyticsAdapter',
     state: 'all'
   },
   rubicon: {
     name: 'Rubicon',
-    code: 'rubicon',
+    display: 'Rubicon Analytics',
+    code: 'rubiconAnalyticsAdapter',
     state: 'stable'
   },
   sharethrough: {
     name: 'Sharethrough',
-    code: 'sharethrough',
+    display: 'Sharethrough Analytics',
+    code: 'sharethroughAnalyticsAdapter',
     state: 'all'
   },
   sigmoid: {
     name: 'Sigmoid Analytics',
-    code: 'sigmoid',
+    display: 'Sigmoid Analytics',
+    code: 'sigmoidAnalyticsAdapter',
     state: 'all'
   },
   vuble: {
     name: 'Vuble Analytics',
-    code: 'vuble',
+    display: 'Vuble Analytics',
+    code: 'vubleAnalyticsAdapter',
     state: 'stable'
   },
   yuktamedia: {
     name: 'Yuktamedia Analytics',
-    code: 'yuktamedia',
+    display: 'Yuktamedia Analytics',
+    code: 'yuktamediaAnalyticsAdapter',
     state: 'stable'
   }
 }

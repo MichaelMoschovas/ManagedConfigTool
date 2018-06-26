@@ -26,7 +26,8 @@ var CONTROLLER = {
 	    	SETUP.setFormToggle("custom");
 	    	CONTROLLER.displayFileName();
 	    }else{
-	    	//MESSAGE.printMessage(4,null);
+            MESSAGE.printMessage(4,null);
+            CONTROLLER.resetValues();
 	    }
     },
     reset: function(){
@@ -161,6 +162,7 @@ var CONTROLLER = {
     	if(el.checked){
     		CONTROLLER.analytics.push(t);
     		CONTROLLER.displayBidsPreview(el,"analytics");
+            console.log(CONTROLLER.analytics);
     	}
     	else{
     		for(var i = 0; i < CONTROLLER.analytics.length; i++){
@@ -457,31 +459,36 @@ var CONTROLLER = {
     		document.getElementById("uploaded-file").src = "images/xls_file.png";
     	}
     },
+    resetValues: function(){
+        /*-----------------------------------------------------------------------*/
+        /*------------ Function called to reset pattern object values -----------*/
+        /*-----------------------------------------------------------------------*/
+        var elDrop = document.getElementById("fileinput"), elDisplay = document.getElementById("filedisplay"), bidEl = document.getElementsByClassName("menu_item_select_bid-check");
+        elDisplay.className+=" hidden";
+        elDrop.className = elDrop.className.replace(/ hidden/g, "");
+        
+        CONTROLLER.file="";
+        CONTROLLER.patterns = [];
+        CONTROLLER.fC=false;
+        CONTROLLER.columns = 0;
+
+        for(var i = 0; i < bidEl.length; i++){
+            if(bidEl[i].childNodes[1].checked) {
+                bidEl[i].childNodes[1].checked = false;
+                bidEl[i].childNodes[1].dispatchEvent(CONTROLLER.event["change"]);
+            }
+        }
+        
+        document.getElementById("file").value = "";
+
+        CONTROLLER.formCheck();
+    },
     resetUpload: function(){
     	/*-----------------------------------------------------------------------*/
-    	/*------- Function called to reset file and pattern object values -------*/
-    	/*----------------- and revert to default upload view -------------------*/
+    	/*-------------------- Function called to reset file  -------------------*/
     	/*-----------------------------------------------------------------------*/
-    	var elDrop = document.getElementById("fileinput"), elDisplay = document.getElementById("filedisplay"), bidEl = document.getElementsByClassName("menu_item_select_bid-check");
-    	elDisplay.className+=" hidden";
-    	elDrop.className = elDrop.className.replace(/ hidden/g, "");
-    	
-    	CONTROLLER.file="";
-    	CONTROLLER.patterns = [];
-    	CONTROLLER.fC=false;
-    	CONTROLLER.columns = 0;
-
-    	for(var i = 0; i < bidEl.length; i++){
-    		if(bidEl[i].childNodes[1].checked) {
-    			bidEl[i].childNodes[1].checked = false;
-    			bidEl[i].childNodes[1].dispatchEvent(CONTROLLER.event["change"]);
-    		}
-    	}
-    	
-    	document.getElementById("file").value = "";
-
+    	CONTROLLER.resetValues();
     	MESSAGE.resetMessage();
-    	CONTROLLER.formCheck();
     },
     checkArray: function(a){
     	/*-----------------------------------------------------------------------*/

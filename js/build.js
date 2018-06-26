@@ -1,18 +1,25 @@
 var BUILD = {
-    buildArray: function(arg) {
+    buildArray: function(arg,bool) {
         var arr = [];
 
         if (arg.match(/,/gi)) {
             var argS = arg.split(",");
             for (var i = 0; i < argS.length; i++) {
-                arr.push(BUILD.buildArray(argS[i]));
+                arr.push(BUILD.buildArray(argS[i],true));
             }
-        } else if (arg.match(/\d+x\d+/gi)) {
+        } else if (arg.match(/\d+x\d+/gi)&&bool) {
+        	var argS = arg.split("x");
+            for (var i = 0; i < argS.length; i++) {
+                arr.push(BUILD.buildArray(argS[i],true));
+            }
+        } else if (arg.match(/\d+x\d+/gi)){
+            var inArr = [];
             var argS = arg.split("x");
             for (var i = 0; i < argS.length; i++) {
-                arr.push(BUILD.buildArray(argS[i]));
+                inArr.push(BUILD.buildArray(argS[i],true));
             }
-        } else {
+            arr.push(inArr);
+        }else {
             return (Number(arg)) ? Number(arg) : arg;
         }
 
@@ -236,13 +243,13 @@ var BUILD = {
             for (var j = 0; j < obj.bids.length; j++) {
                 if (obj.bids[j].hasOwnProperty("bidder") && obj.bids[j].bidder == BIDDERS[b].code) {
                     c = true;
-                    obj.bids[j].params[a[1][key]] = BUILD.buildArray(a[i][key]);
+                    obj.bids[j].params[a[1][key]] = a[i][key].match(/,/gi) ? BUILD.buildArray(a[i][key],true) : BUILD.buildArray(a[i][key],false);
                 }
             }
             if (!c) {
                 var temp = { bidder: BIDDERS[b].code, params: {} };
                 obj.bids.push(temp);
-                obj.bids[obj.bids.length - 1].params[a[1][key]] = BUILD.buildArray(a[i][key]);
+                obj.bids[obj.bids.length - 1].params[a[1][key]] = a[i][key].match(/,/gi) ? BUILD.buildArray(a[i][key],true) : BUILD.buildArray(a[i][key],false);
                 CONTROLLER.preSelectBidder(BIDDERS[b].code);
             }
         } else {
@@ -252,7 +259,7 @@ var BUILD = {
         return obj;
     },
     getSizes: function(obj,a,key,i) {
-    	var sArr = BUILD.buildArray(a[i][key]), c = false;
+    	var sArr = a[i][key].match(/,/gi) ? BUILD.buildArray(a[i][key],true) : BUILD.buildArray(a[i][key],false), c = false;
 
 		if (a[1][key].match(/1024/gi)) {
 			obj.sizes = sArr;

@@ -1026,6 +1026,16 @@ var BIDDERS = {
     adapter: 'nginad',
     state: 'legacy'
   },
+  oath: {
+    name: 'Oath',
+    code: 'aol',
+    parameters: [
+      'placement',
+      'network'
+    ],
+    adapter: 'aol',
+    state: 'all'
+  },
   oftmedia: {
     name: 'One Fifty Two Media',
     code: 'oftmedia',

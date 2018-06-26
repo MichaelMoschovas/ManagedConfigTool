@@ -61,7 +61,7 @@ var SETUP = {
 	            label.className = "menu_item_select_analytics-check";
 	            if(ANALYTICS[key].state == "legacy" || ANALYTICS[key].state == "stable") label.className += (" "+ANALYTICS[key].state);
 	            input.type = "checkbox";
-	            input.id = "analytics_" + ANALYTICS[key].code;
+	            input.id = "analytics_" + ANALYTICS[key].display;
 	            input.addEventListener("change", function(e) {
 	                CONTROLLER.logAnalytics(e.target, ANALYTICS[key].code);
 	            });

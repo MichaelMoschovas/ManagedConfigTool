@@ -370,7 +370,7 @@ input:checked + .switch_value:before{
 }
 
 .menu_item_sidebar_option{
-	margin-bottom: 20px;
+	margin-bottom: 15px;
 	cursor:pointer;
 	padding:5px;
 }
