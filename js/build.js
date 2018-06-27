@@ -5,7 +5,11 @@ var BUILD = {
         if (arg.match(/,/gi)) {
             var argS = arg.split(",");
             for (var i = 0; i < argS.length; i++) {
-                arr.push(BUILD.buildArray(argS[i],true));
+            	if(argS[i].match(/^\{.+:.+\}/gi)){
+            		arr.push(BUILD.buildObject(argS[i]));
+            	}else{
+	                arr.push(BUILD.buildArray(argS[i],true));
+	            }
             }
         } else if (arg.match(/\d+x\d+/gi)&&bool) {
         	var argS = arg.split("x");
@@ -25,15 +29,15 @@ var BUILD = {
         return arr;
     },
     buildObject: function(arg) {
-        var obj = {}, o = arg.replace(/\{|\}/gi,"");
-
+        var obj = {}, o = arg.replace(/^{/,"").replace(/}$/g,"");
         var splitAttributes = function(e){
-        	var ret = e.split(",");
+        	var out = e.match(/([^_,]|_.)+/g);
+        	var ret = out;
         	return ret;
         };
 
         var splitValues = function(e){
-        	var ret = e.split(":");
+        	var ret = e.split(/:(.+)/);
         	return ret;
         };
 
@@ -41,13 +45,26 @@ var BUILD = {
         	var a = splitAttributes(o);
         	for(var i = 0; i < a.length; i++){
         		var t = splitValues(a[i]);
-        		obj[t[0]] = t[1];
+        		if(t[1].match(/^\{.+:.+\}/gi)){
+        			obj[t[0]] = BUILD.buildObject(t[1]);
+        		}else if(t[1].match(/,/gi)){
+        			t[1] = t[1].replace("_,",",");
+        			obj[t[0]] = BUILD.buildArray(t[1]);
+        		}else{
+	        		obj[t[0]] = t[1];
+	        	}
         	}
         }else{
         	var s = splitValues(o);
-        	obj[s[0]] = s[1];
+        	if(s[1].match(/\{.+:.+\}/gi)){
+        		obj[s[0]] = BUILD.buildObject(s[1]);
+        	}else if(s[1].match(/,/gi)){
+        		obj[s[0]] = BUILD.buildArray(s[1]);
+        	}else{
+	        	obj[s[0]] = s[1];
+	        }
         }
-        
+        console.log(obj)
         return obj;
     },
     buildCSVArray: function(d) {

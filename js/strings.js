@@ -12,7 +12,7 @@ var STRINGS = {
 	    	var s1 = "", s2 = "";
 
 	    	if(v != arr.length-1)  s1 = ",";
-	    	if(v != 0) s2 = ",";
+	    	if(v != 0 && !str.match(/,$/)) s2 = ",";
 
 	        if (Array.isArray(arr[v])) {
 	        	//If value is an array, setup output with a return from passing 
@@ -23,11 +23,14 @@ var STRINGS = {
 	        	if(typeof arr[v] == "object"){
 	        		//If value is an object, setup output with a return from passing 
 	        		//object to object string constructor function
+	        		console.log(str);
 	        		str += s2 + STRINGS.objToString(arr[v],f);
+	        		console.log(str);
 	        	}
 	        	else{
 	        		//Construct value as output string
 		            isNaN(t) ? str += '"' + arr[v].toString() + '"' + s1  : str += arr[v].toString() + s1;
+		            console.log(str);
 		        }
 	        }
 	    }
@@ -38,15 +41,18 @@ var STRINGS = {
     	/*-----------------------------------------------------------------------*/
     	/*-------- Function called to convert object to string for output -------*/
     	/*-----------------------------------------------------------------------*/
-	    var str = '{\n',tab="";
+	    var str = '{\n',tab="",c=0;
 	    for(var i = 0; i < f; i++){
 	    	tab+="\t";
 	    }
+	    const len = Object.getOwnPropertyNames(obj).length;
 	    //Loop through object properties
 	    for (var p in obj) {
+	    	c++;
 	    	var s1 = "";
 	        if (obj.hasOwnProperty(p)) {
-	        	if(p != obj.length-1)  s1 = ",";
+	        	if(c != len)  s1 = ",";
+	        	
 	        	var t = Number(obj[p]);
 
 	        	if( Array.isArray(obj[p])){
