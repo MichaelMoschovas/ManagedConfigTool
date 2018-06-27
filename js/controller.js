@@ -268,6 +268,16 @@ var CONTROLLER = {
             }   
         }
     },
+    logTimeout : function(e){
+        if(CONTROLLER.other.length > 0){
+            for(var i = 0; i < CONTROLLER.other.length; i++){
+                if(CONTROLLER.other[i][0]=="bidderTimeout") CONTROLLER.other.splice(i,1)
+            }
+        }
+        if(e.target.value!=""&&e.target.value>0){
+            CONTROLLER.other.push(["bidderTimeout",e.target.value]);
+        }
+    },
    	formCheck: function(){
    		/*-----------------------------------------------------------------------*/
     	/*------- Function called to determine if download button should --------*/

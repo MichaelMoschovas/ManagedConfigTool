@@ -127,12 +127,17 @@
 						<div class="menu_item_select_list" id="select_other">
 							<div class="menu_item_select_title">SELECT OTHER OPTIONS TO INCLUDE</div>
 							<div class="menu_item_select_other" id="other_contain">
-								<div class="menu_item_select_other-bidsend">
-									<span class="menu_item_select_other-bidsend-title">Enable Send All Bids</span>
-									<label class="menu_item_sidebar_version-switch other">
-										<input id="bidsend-value" type="checkbox" onchange="CONTROLLER.enableSendAll(event)"><span class="switch_value other"></span><span class="switch_slider other"></span></label>
+								<div class="menu_item_select_other-bidsend other_options">
+									<span class="menu_item_select_other-bidsend-title">Enable Send All Bids:</span>
+									<label class="menu_item_select_other-switch other">
+										<input id="bidsend-value" type="checkbox" onchange="CONTROLLER.enableSendAll(event)"><span class="switch_value other"></span><span class="switch_slider other"></span>
+									</label>
 								</div>
-								<div class="menu_item_select_other-bidtimeout">
+								<div class="menu_item_select_other-bidtime other_options">
+									<span class="menu_item_select_other-bidtime-title">Set Bidder Timeout:</span>
+									<label class="menu_item_select_other-input">
+										<input id="bidtime-value" type="number" onkeyup="CONTROLLER.logTimeout(event)">
+									</label>
 								</div>
 							</div>
 						</div>

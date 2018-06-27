@@ -305,7 +305,7 @@ body,html {
     margin-left: 40px;
 }
 
-.menu_item_sidebar_version-switch.other{
+.menu_item_select_other-switch{
   	position: relative;
     display: inline-block;
     margin: 0px auto;
@@ -321,7 +321,15 @@ body,html {
     vertical-align: 10px;
 }
 
-.menu_item_sidebar_version-switch input {display:none;}
+.menu_item_sidebar_version-switch input , .menu_item_select_other-switch input{display:none;}
+
+.other_options{
+	margin-bottom: 10px;
+	height:40px;
+	line-height:43px;
+	padding: 3px 8px;
+	border: 1px dashed #888888;
+}
 
 .switch_slider{
   	position: absolute;
@@ -376,6 +384,10 @@ body,html {
 	content: "";
 }
 
+input[type=text]:focus,input[type=number]:focus {
+    outline-color:#333e48;
+}
+
 input:checked + .switch_value + .switch_slider {
   	background-color: #333e48;
 }
@@ -404,6 +416,17 @@ input:checked + .switch_value:before{
 
 input:checked + .switch_value.other:before{
 	content: "";
+}
+
+.menu_item_select_other-input{
+	margin-left:18px;
+}
+
+.menu_item_select_other-input input{
+	height:22px;
+	width:70px;
+	font-size: 13px;
+	text-align:right;
 }
 
 .menu_item_sidebar_border{
