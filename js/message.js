@@ -1,5 +1,4 @@
 var MESSAGE = {
-	last : "",
 	title : ["ERROR","ERROR","ERROR","ERROR","ERROR","NOTICE","WARNING","WARNING","NOTICE"],
 	display : [
 		"File Invalid. Please review file for errors.",
@@ -57,9 +56,6 @@ var MESSAGE = {
     	/*----------- Function called to display and fill error div -------------*/
     	/*----------------------- based on passed value/s -----------------------*/
     	/*-----------------------------------------------------------------------*/
-    	MESSAGE.last = err;
-
-    	//if(err!=6 && err!=7 && err!=8 && MESSAGE.last) MESSAGE.resetMessage();
     	var p = document.createElement("P"), title = document.createElement("SPAN"), contain = document.getElementById("errorlog");
     	if(!document.getElementById(MESSAGE.replaceMessageMacros(MESSAGE.id[err],v,err))){
 	    	p.id = MESSAGE.replaceMessageMacros(MESSAGE.id[err],v,err);

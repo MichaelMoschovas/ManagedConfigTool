@@ -130,7 +130,7 @@ var BUILD = {
     	/*----------- Function called to if file is of type .xls/.xlsx ----------*/
     	/*------------------- and constructs the data array ---------------------*/
     	/*-----------------------------------------------------------------------*/
-    	var args = [],argsA = [],argsN = [], a =[], n=[], tA="" , tN="" , sheet = d.Sheets[Object.keys(d.Sheets)[0]],arr = [];
+    	var args = [],argsA = [],argsN = [], a, n, sheet = d.Sheets[Object.keys(d.Sheets)[0]],arr = [], push=function(r,u){for(var e="",h=[],n=0;n<r.length;n++){var p=r[n].replace(u,"");""==e?(h.push(p),e=p):e!=p&&(h.push(p),e=p)}return h};
 
     	//Loop through keys in first sheet and push each value to two arrays
     	for(var key in sheet){
@@ -139,36 +139,15 @@ var BUILD = {
     			argsN.push(key);
     		}
     	}
-
     	//Sort array alphanumerically
     	argsA.sort(STRINGS.sortArr);
     	//Sort numerically ONLY
     	argsN.sort(STRINGS.sortArrNum);
 
-    	//Loop through alphanumeric sort and determine/log ALL column key values
-    	for(var i = 0; i < argsA.length; i ++){
-    		var alpha = argsA[i].replace(/[0-9]/gi,"");
-    		if(tA == ""){
-    			a.push(alpha);
-    			tA = alpha;
-    		}
-    		else if(tA != alpha){
-    			a.push(alpha);
-    			tA = alpha;
-    		}
-    	}
-    	//Loop through numeric sort and determine/log ALL row key values
-    	for(var j = 0; j < argsN.length; j ++){
-    		var num = argsN[j].replace(/[a-z]/gi,"");
-    		if(tN == ""){
-    			n.push(num);
-    			tN = num;
-    		}
-    		else if(tN != num){
-    			n.push(num);
-    			tN = num;
-    		}
-    	}
+		//Loop through alphanumeric sort/numeric sort and determine/log ALL column key values
+    	var a = push(argsA,new RegExp(/[0-9]/,"gi"));
+    	var n = push(argsN,new RegExp(/[a-z]/,"gi"));
+    	
     	//Loop through all possible row key values
     	for(var k = 0; k < n.length; k++){
     		var p = [];
@@ -194,7 +173,6 @@ var BUILD = {
     		arr.push(p);
     	}
     	return arr;
-
     },
     buildBidObjects: function(a) {
         /*-----------------------------------------------------------------------*/
