@@ -42,7 +42,7 @@ var STRINGS = {
 	    for(var i = 0; i < f; i++){
 	    	tab+="\t";
 	    }
-	    const len = Object.getOwnPropertyNames(obj).length;
+	    var len = Object.getOwnPropertyNames(obj).length;
 	    //Loop through object properties
 	    for (var p in obj) {
 	    	c++;

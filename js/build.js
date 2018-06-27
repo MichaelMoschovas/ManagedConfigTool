@@ -1,5 +1,8 @@
 var BUILD = {
     buildArray: function(arg,bool) {
+    	/*-----------------------------------------------------------------------*/
+	    /*------------- Function called to build array from file data -----------*/
+	    /*-----------------------------------------------------------------------*/
         var arr = [];
 
         if (arg.match(/,/gi)) {
@@ -29,6 +32,9 @@ var BUILD = {
         return arr;
     },
     buildObject: function(arg) {
+    	/*-----------------------------------------------------------------------*/
+	    /*------------- Function called to build object from file data ----------*/
+	    /*-----------------------------------------------------------------------*/
         var obj = {}, o = arg.replace(/^{/,"").replace(/}$/g,"");
         var splitAttributes = function(e){
         	var out = e.match(/([^_,]|_.)+/g);
@@ -236,6 +242,9 @@ var BUILD = {
         return (CONTROLLER.patterns.length > 0 && pass > 0) ? true : false;
     },
     confirmBidderParams: function(obj){
+    	/*-----------------------------------------------------------------------*/
+	    /*----- Function called to check required bidder params are defined -----*/
+	    /*-----------------------------------------------------------------------*/
     	var fail = 0;
         if (!obj.hasOwnProperty("bids")) {
             fail++;
@@ -275,6 +284,10 @@ var BUILD = {
         return (f.length == 0) ? null : f;
     },
     getBidders: function(obj,a,key,i) {
+    	/*-----------------------------------------------------------------------*/
+	    /*--------------- Function called to build bidder objects ---------------*/
+	    /*------ as well as checking to make sure bidder exists in library ------*/
+	    /*-----------------------------------------------------------------------*/
         var b = a[0][key].toLowerCase();
         if (BIDDERS.hasOwnProperty(b)) {
             if (!obj.hasOwnProperty("bids")) obj.bids = [];
@@ -297,6 +310,9 @@ var BUILD = {
         return obj;
     },
     getSizes: function(obj,a,key,i) {
+    	/*-----------------------------------------------------------------------*/
+	    /*---------- Function called to create size array for pattern -----------*/
+	    /*-----------------------------------------------------------------------*/
     	var sArr = a[i][key].match(/,/gi) ? BUILD.buildArray(a[i][key],true) : BUILD.buildArray(a[i][key],false), c = false;
 
 		if (a[1][key].match(/1024/gi)) {
@@ -307,14 +323,23 @@ var BUILD = {
 		return obj;
     },
     getSlotPattern: function(obj,a,key,i) {
+    	/*-----------------------------------------------------------------------*/
+	    /*----------------- Function called to set slot pattern -----------------*/
+	    /*-----------------------------------------------------------------------*/
     	obj.slotPattern = a[i][key];
     	return obj;
     },
     getMediaType: function() {
+    	/*-----------------------------------------------------------------------*/
+	    /*------------------ Function called to set media type ------------------*/
+	    /*-----------------------------------------------------------------------*/
 		obj.mediaType = "" + a[i][key];
 		return obj;
     },
     getCode: function(obj,a,key,i) {
+    	/*-----------------------------------------------------------------------*/
+	    /*--------------------- Function called to set code ---------------------*/
+	    /*-----------------------------------------------------------------------*/
     	obj.code = "" + a[i][key];
     	return obj;
     }

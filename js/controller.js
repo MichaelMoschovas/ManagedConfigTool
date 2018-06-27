@@ -320,6 +320,7 @@ var CONTROLLER = {
 	    		for(var j =0; j < CONTROLLER.precision.value.buckets[i][key][0].length; j++){
 		    		if(CONTROLLER.precision.value.buckets[i][key][0][j]==""||CONTROLLER.precision.value.buckets[i][key][0][j]==null) c = false
 		    	}
+                if(CONTROLLER.precision.value.buckets[i][key][0][3]<=0||CONTROLLER.precision.value.buckets[i][key][0][2]<=0) c = false
 		    }
     	}
     	return c;
@@ -344,7 +345,7 @@ var CONTROLLER = {
 			input.push(document.createElement("INPUT"));
 			label[i].className = "module_precision_bucket-text";
 			input[i].type = "number";
-			input[i].value = "0";
+			input[i].value = (i==0) ? "2" : "0";
 			input[i].min = "0";
 			//Setup input onchange/keyup event listeners
 			input[i].addEventListener("change", function(e) {

@@ -24,14 +24,23 @@ var OUTPUT = {
 	    return (OUTPUT.export);
 	},
 	setVersion : function(){
+		/*-----------------------------------------------------------------------*/
+	    /*---------------- Function called to set version property --------------*/
+	    /*-----------------------------------------------------------------------*/
 		var v = document.getElementById("version-value").checked ? "stable-1-x" : "0-34-x";
 		OUTPUT.version = OUTPUT.version.replace(/\{VERSION\}/gi,v);
 	},
 	setMods : function(obj){
+		/*-----------------------------------------------------------------------*/
+	    /*---------------- Function called to set modules property --------------*/
+	    /*-----------------------------------------------------------------------*/
 		var m = OUTPUT.buildModItems();
 		OUTPUT.modules = OUTPUT.modules.replace(/\{MODULES\}/gi,m );
 	},
 	buildModItems: function(){
+		/*-----------------------------------------------------------------------*/
+	    /*----------------- Function called to build module array ---------------*/
+	    /*-----------------------------------------------------------------------*/
 		var modV = '';
 		if (CONTROLLER.bids.length > 0) modV += STRINGS.customString(modV, CONTROLLER.bids.sort(STRINGS.sortArrAlpha));
 	    if (CONTROLLER.analytics.length > 0) modV += STRINGS.customString(modV, CONTROLLER.analytics.sort(STRINGS.sortArrAlpha));
@@ -40,13 +49,22 @@ var OUTPUT = {
 	    return modV;
 	},
 	setQue : function(){
+		/*-----------------------------------------------------------------------*/
+	    /*---------------- Function called to set ad unit patterns --------------*/
+	    /*-----------------------------------------------------------------------*/
 		OUTPUT.que = OUTPUT.que.replace(/\{PATTERNS\}/gi,CONTROLLER.patterns);
 	},
 	setConfig : function(obj){
+		/*-----------------------------------------------------------------------*/
+	    /*----------------- Function called to set configuration ----------------*/
+	    /*-----------------------------------------------------------------------*/
 		var c = OUTPUT.getGranularity()+OUTPUT.getOther();
 		OUTPUT.config = OUTPUT.config.replace(/\{CONFIG\}/gi,''+ c);
 	},
 	setGranularity: function(){
+		/*-----------------------------------------------------------------------*/
+	    /*-------------- Function called to set granularity in config -----------*/
+	    /*-----------------------------------------------------------------------*/
 		//Construct precision based on value type
     	if(typeof CONTROLLER.precision.value != "object"){
     		OUTPUT.removeCustom();
@@ -58,9 +76,15 @@ var OUTPUT = {
     	}
 	},
 	getGranularity: function(){
+		/*-----------------------------------------------------------------------*/
+	    /*----------------- Function called to return granularity ---------------*/
+	    /*-----------------------------------------------------------------------*/
 		return OUTPUT.granularity;
 	},
 	getOther: function(){
+		/*-----------------------------------------------------------------------*/
+	    /*---------------- Function called to return other options --------------*/
+	    /*-----------------------------------------------------------------------*/
 		var str = "";
 		if(CONTROLLER.other.length > 0){
 			for(var i =0; i < CONTROLLER.other.length; i++){
@@ -107,18 +131,33 @@ var OUTPUT = {
     	return OUTPUT.buckets;
     },
 	setCustom: function(){
+		/*-----------------------------------------------------------------------*/
+	    /*------------- Function called to set custom config variable -----------*/
+	    /*-----------------------------------------------------------------------*/
 		OUTPUT.custom = OUTPUT.custom.replace(/\{CUSTOM\}/gi,OUTPUT.getBuckets());
 	},
 	removeCustom: function(){
+		/*-----------------------------------------------------------------------*/
+	    /*----------- Function called to remove custom config variable ----------*/
+	    /*-----------------------------------------------------------------------*/
 		OUTPUT.custom = '';
 	},
 	setExport:function(){
+		/*-----------------------------------------------------------------------*/
+	    /*--------------------- Function called to set export -------------------*/
+	    /*-----------------------------------------------------------------------*/
 		OUTPUT.export = OUTPUT.export.replace(/\{EXPORTS\}/gi,OUTPUT.combine());
 	},
 	combine:function(){
+		/*-----------------------------------------------------------------------*/
+	    /*------------ Function called to passback string combination -----------*/
+	    /*-----------------------------------------------------------------------*/
 		return (OUTPUT.version+OUTPUT.modules+OUTPUT.que+OUTPUT.custom+OUTPUT.config);
 	},
 	reset: function(){
+		/*-----------------------------------------------------------------------*/
+	    /*-------- Function called to reset properties to default values --------*/
+	    /*-----------------------------------------------------------------------*/
 		var p = OUTPUT;
 		p.export ='module.exports = {\n {EXPORTS} \n\t}\n};';
 		p.version = '\t"version": "{VERSION}",\n';
