@@ -162,13 +162,13 @@ var SETUP = {
     	/*-----------------------------------------------------------------------*/
     	/*------- Function called to toggle between customization options -------*/
     	/*-----------------------------------------------------------------------*/
-    	var elsSide = document.getElementsByClassName("menu_item_sidebar_option");
-    	for(var i = 0; i < elsSide.length; i++){
-    		if(elsSide[i].className.indexOf("selected")>-1&&elsSide[i].id!="sidebar_"+e){
-    			elsSide[i].className = elsSide[i].className.replace(/ selected/g, "");
-    			document.getElementById("select_"+(elsSide[i].id.split("_")[1])).className = document.getElementById("select_"+(elsSide[i].id.split("_")[1])).className.replace(/ selected/g, "");
-    		}else if(elsSide[i].id=="sidebar_"+e){
-    			elsSide[i].className += " selected";
+    	var els = document.getElementsByClassName("menu_item_sidebar_option");
+    	for(var i = 0; i < els.length; i++){
+    		if(els[i].className.indexOf("selected")>-1&&els[i].id!="sidebar_"+e){
+    			els[i].className = els[i].className.replace(/ selected/g, "");
+    			document.getElementById("select_"+(els[i].id.split("_")[1])).className = document.getElementById("select_"+(els[i].id.split("_")[1])).className.replace(/ selected/g, "");
+    		}else if(els[i].id=="sidebar_"+e){
+    			els[i].className += " selected";
     			document.getElementById("select_"+e).className += " selected";
     		}
     	}

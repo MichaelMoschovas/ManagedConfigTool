@@ -14,14 +14,14 @@ var CONTROLLER = {
 	cC: false,
 	event : {},
 	url:{link:"",name:""},
-    beginParse: function(data,t) {
+    beginParse: function(d,t) {
     	/*-----------------------------------------------------------------------*/
     	/*------------ Function called to begin file parsing process ------------*/
     	/*-----------------------------------------------------------------------*/
     	CONTROLLER.filetype = t;
-    	var arr = (CONTROLLER.filetype == "csv" )? BUILD.buildCSVArray(data) : BUILD.buildXLSArray(data);
-    	CONTROLLER.passQA = arr != null ? CONTROLLER.checkArray(arr) : MESSAGE.printMessage(0,null);
-    	var c = CONTROLLER.passQA ? BUILD.buildBidObjects(arr) : MESSAGE.printMessage(2,null);
+    	var a = (CONTROLLER.filetype == "csv" )? BUILD.buildCSVArray(d) : BUILD.buildXLSArray(d);
+    	CONTROLLER.passQA = a != null ? CONTROLLER.checkArray(a) : MESSAGE.printMessage(0,null);
+    	var c = CONTROLLER.passQA ? BUILD.buildBidObjects(a) : MESSAGE.printMessage(2,null);
     	if(c){ 
     		CONTROLLER.formCheck(); 
 	    	SETUP.setFormToggle("custom");
@@ -66,14 +66,14 @@ var CONTROLLER = {
 	    if(f[0].name.match(regexXLS)||f[0].name.match(regexCSV)){
 	    	//Check for FileReader type
 		    if (typeof (FileReader) != "undefined") {  
-		    	var xls = f[0].name.match(regexXLS) ? true : false;
+		    	var x = f[0].name.match(regexXLS) ? true : false;
 		    	//Setup new FileReader and read file as binary string
 	            var reader = new FileReader();  
 	            reader.onload = function (e) { 
-		            var data = e.target.result;  
+		            var d = e.target.result;  
 		            //If file is excel type, then use XLSX to read data
-		            var workbook = xls ? XLSX.read(data, { type: 'binary' }) : data; 
-		            xls ? (f[0].name.match(regexXLSX) ? CONTROLLER.beginParse(workbook,"xlsx") : CONTROLLER.beginParse(workbook,"xls")) : CONTROLLER.beginParse(workbook,"csv");
+		            var w = x ? XLSX.read(d, { type: 'binary' }) : d; 
+		            x ? (f[0].name.match(regexXLSX) ? CONTROLLER.beginParse(w,"xlsx") : CONTROLLER.beginParse(w,"xls")) : CONTROLLER.beginParse(w,"csv");
 	            };
 	            reader.readAsBinaryString(f[0]); 
 	         }
@@ -94,21 +94,21 @@ var CONTROLLER = {
     	/*-----------------------------------------------------------------------*/
     	/*-- Function called to hide elements that do not match search string ---*/
     	/*-----------------------------------------------------------------------*/
-    	var str = e.target.value;
-    	var regex = new RegExp(str,"gi"), els=document.getElementsByClassName("menu_item_select_bid-check");
+    	var s = e.target.value;
+    	var regex = new RegExp(s,"gi"), els=document.getElementsByClassName("menu_item_select_bid-check");
 
     	//Loop through all bid input elements
 	    for(var i = 0; i < els.length; i++){
 	    	var m1 = els[i].childNodes[0].nodeValue, m2 = els[i].childNodes[1].id;
-	    	if(str==null||str==""||str.length<2){
+	    	if(s==null||s==""||s.length<2){
     			//If the passed string length is less than 2, remove all instances of hidden class
 	    		if(els[i].className.match(/hidden/gi)) els[i].className = els[i].className.replace(/ hidden/g, "");
-	    	}else if(m1.match(regex)==null&&m2.match(regex)==null&&str.length>=2){
+	    	}else if(m1.match(regex)==null&&m2.match(regex)==null&&s.length>=2){
 	    		//If the passed string length is greater than 2 and no match can be made, add class hidden
 	    		if(els[i].className.match(/hidden/gi)==null){
 	    			els[i].className += " hidden";
 	    		}
-	    	}else if((m1.match(regex)||m2.match(regex))&&str.length>=2){
+	    	}else if((m1.match(regex)||m2.match(regex))&&s.length>=2){
 	    		//If the passed string length is greater than 2 and match can be made
 	    		//Check if class hidden exists and remove it
 	    		if(els[i].className.match(/hidden/gi)) els[i].className = els[i].className.replace(/ hidden/g, "");
@@ -138,11 +138,11 @@ var CONTROLLER = {
     	/*------- Function called to remove preview of passed checkbox id -------*/
     	/*-----------------------------------------------------------------------*/
     	var el = document.getElementById(id.replace(/BIDADAPTER/i,"")+"-preview-"+t),input = document.getElementById(t+"_"+id);
-    	var parent = el.parentNode;
+    	var p = el.parentNode;
     	el.parentNode.removeChild(el);
     	input.checked = false;
-    	if(!parent.hasChildNodes()){ 
-    		parent.className = parent.className.replace(/ display/gi,"");
+    	if(!p.hasChildNodes()){ 
+    		p.className = p.className.replace(/ display/gi,"");
     		t == "bid" ? document.getElementById(t+"_contain").style.height = "340px" : document.getElementById(t+"_contain").style.height = "360px";
     		SETUP.setCustomScrolls();
     	}
@@ -238,18 +238,18 @@ var CONTROLLER = {
     	/*-----------------------------------------------------------------------*/
     	/*----- Function called to preselect bid adapters from spreadsheet ------*/
     	/*-----------------------------------------------------------------------*/
-    	var elsGran = document.getElementsByClassName("granularity_check"),elsGranC = document.getElementsByClassName("module_precision_container");
+    	var elsG = document.getElementsByClassName("granularity_check"),elsC = document.getElementsByClassName("module_precision_container");
 
-    	for(var i = 0; i < elsGran.length; i++){
-    		elsGran[i].checked = false;
-	    	if(elsGran[i].id.toLowerCase() == "gran-"+t && t != "custom"){
-				elsGran[i].checked = true;
+    	for(var i = 0; i < elsG.length; i++){
+    		elsG[i].checked = false;
+	    	if(elsG[i].id.toLowerCase() == "gran-"+t && t != "custom"){
+				elsG[i].checked = true;
 				CONTROLLER.resetBuckets();
 	    	}
-	    	else if(elsGran[i].id.toLowerCase() == "gran-"+t && t=="custom"){
-	    		elsGran[i].checked = true;
-	    		for(var j = 0; j < elsGranC.length; j++){
-	    			elsGranC[j].style.display = "block";
+	    	else if(elsG[i].id.toLowerCase() == "gran-"+t && t=="custom"){
+	    		elsG[i].checked = true;
+	    		for(var j = 0; j < elsC.length; j++){
+	    			elsC[j].style.display = "block";
 	    		}
 	    	}
     	}
@@ -364,18 +364,26 @@ var CONTROLLER = {
 			input[i].addEventListener("keyup", function(e) {
 			    CONTROLLER.precBool(e.target.parentNode.parentNode,true);
 			});;
+            if(i==0){
+                input[i].addEventListener("keypress", function(event) {
+                    if(event.charCode < 48 || event.charCode > 57) event.preventDefault();
+                });
+            }
 			switch(i){
 				case 0:
 					input[i].step = "1";
 					label[i].appendChild(document.createTextNode("Enter precision: "));
+                    label[i].className += " text_space6";
 					break;
 				case 1:
 					input[i].step = ".1";
 					label[i].appendChild(document.createTextNode("Enter minimum: "));
+                    label[i].className += " text_space4";
 					break;
 				case 2:
 					input[i].step = ".1";
 					label[i].appendChild(document.createTextNode("Enter maximum: "));
+                    label[i].className += " text_space1";
 					break;
 				case 3:
 					input[i].step = ".1";
@@ -387,10 +395,6 @@ var CONTROLLER = {
 			label[i].appendChild(input[i]);
 			mpb.appendChild(label[i]);
 		}
-    	
-    	label[0].className += " text_space6";
-    	label[1].className += " text_space4";
-    	label[2].className += " text_space1";
     	mpb.appendChild(rem);
     	document.getElementById("bucket_contain").insertBefore(mpb,document.getElementById("mp_addbucket"));
     	CONTROLLER.precBool(mpb,true);
@@ -415,12 +419,10 @@ var CONTROLLER = {
 		    		}
 		    	}
 	    	}
-	    	
 	    	//Loop through bucket array and check for object property name match
 	    	for(var j = 0; j < CONTROLLER.precision.value.buckets.length; j++){
 	    		if(CONTROLLER.precision.value.buckets[j].hasOwnProperty(e.id)) exists = j;
 	    	}
-
 	    	if(check==4 && exists==null){
 	    		//If all four input fields exist and name does not already exist in buckets
 	    		//then push object into bucket
@@ -445,7 +447,6 @@ var CONTROLLER = {
 	    	}
 	    }
 	    CONTROLLER.formCheck();
-    	
     },
     removeBucket: function(id){
     	/*-----------------------------------------------------------------------*/

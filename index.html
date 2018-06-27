@@ -105,16 +105,16 @@
 						<div class="menu_item_select_list" id="select_precision">
 							<div class="menu_item_select_title">SELECT PRICE GRANULARITY</div>
 							<div class="menu_item_select_granularity" id="granularity_contain">
-								<label class="menu_item_select_modules-check">Low<input class="granularity_check" id="gran-low" type="checkbox" onchange="CONTROLLER.updatePrecision('low')"><span class="checkmark"></span></label>
-								<label class="menu_item_select_modules-check">Medium<input class="granularity_check" id="gran-med" checked type="checkbox" onchange="CONTROLLER.updatePrecision('med')"><span class="checkmark"></span></label>
-								<label class="menu_item_select_modules-check">High<input class="granularity_check" id="gran-high" type="checkbox" onchange="CONTROLLER.updatePrecision('high')"><span class="checkmark"></span></label>
-								<label class="menu_item_select_modules-check">Auto<input class="granularity_check" id="gran-auto" type="checkbox" onchange="CONTROLLER.updatePrecision('auto')"><span class="checkmark"></span></label>
-								<label class="menu_item_select_modules-check">Dense<input class="granularity_check" id="gran-dense" type="checkbox" onchange="CONTROLLER.updatePrecision('dense')"><span class="checkmark"></span></label>
-								<label class="menu_item_select_modules-check">Custom<input class="granularity_check" id="gran-custom" type="checkbox" onchange="CONTROLLER.updatePrecision('custom')"><span class="checkmark"></span></label>
+								<label class="menu_item_select_modules-check precision">Low<input class="granularity_check" id="gran-low" type="checkbox" onchange="CONTROLLER.updatePrecision('low')"><span class="checkmark"></span></label>
+								<label class="menu_item_select_modules-check precision">Medium<input class="granularity_check" id="gran-med" checked type="checkbox" onchange="CONTROLLER.updatePrecision('med')"><span class="checkmark"></span></label>
+								<label class="menu_item_select_modules-check precision">High<input class="granularity_check" id="gran-high" type="checkbox" onchange="CONTROLLER.updatePrecision('high')"><span class="checkmark"></span></label>
+								<label class="menu_item_select_modules-check precision">Auto<input class="granularity_check" id="gran-auto" type="checkbox" onchange="CONTROLLER.updatePrecision('auto')"><span class="checkmark"></span></label>
+								<label class="menu_item_select_modules-check precision">Dense<input class="granularity_check" id="gran-dense" type="checkbox" onchange="CONTROLLER.updatePrecision('dense')"><span class="checkmark"></span></label>
+								<label class="menu_item_select_modules-check precision">Custom<input class="granularity_check" id="gran-custom" type="checkbox" onchange="CONTROLLER.updatePrecision('custom')"><span class="checkmark"></span></label>
 								<div class="module_precision_container" id="bucket_contain">
 									<div class="module_precision_title">BUCKETS</div>
 									<div class="module_precision_bucket" id="bucket_1">
-										<label class="module_precision_bucket-text text_space6">Enter precision: <input value="2" step="1" type="number" min="0" onchange="CONTROLLER.precBool(event.target.parentNode.parentNode,true)" onkeyup="CONTROLLER.precBool(event.target.parentNode.parentNode,true)"></label>
+										<label class="module_precision_bucket-text text_space6">Enter precision: <input value="2" step="1" type="number" min="0" onchange="CONTROLLER.precBool(event.target.parentNode.parentNode,true)" onkeyup="CONTROLLER.precBool(event.target.parentNode.parentNode,true)" onkeypress="return event.charCode >= 48 && event.charCode <= 57"></label>
 										<label class="module_precision_bucket-text text_space4">Enter minimum: <input value="0" step=".1" type="number" min="0" onchange="CONTROLLER.precBool(event.target.parentNode.parentNode,true)" onkeyup="CONTROLLER.precBool(event.target.parentNode.parentNode,true)"></label>
 										<label class="module_precision_bucket-text text_space1">Enter maximum: <input value="0" step=".1" type="number" min="0" onchange="CONTROLLER.precBool(event.target.parentNode.parentNode,true)" onkeyup="CONTROLLER.precBool(event.target.parentNode.parentNode,true)"></label>
 										<label class="module_precision_bucket-text">Enter increment: <input value="0" step=".1" type="number" min="0" onchange="CONTROLLER.precBool(event.target.parentNode.parentNode,true)" onkeyup="CONTROLLER.precBool(event.target.parentNode.parentNode,true)"></label>
