@@ -23,14 +23,11 @@ var STRINGS = {
 	        	if(typeof arr[v] == "object"){
 	        		//If value is an object, setup output with a return from passing 
 	        		//object to object string constructor function
-	        		console.log(str);
 	        		str += s2 + STRINGS.objToString(arr[v],f);
-	        		console.log(str);
 	        	}
 	        	else{
 	        		//Construct value as output string
 		            isNaN(t) ? str += '"' + arr[v].toString() + '"' + s1  : str += arr[v].toString() + s1;
-		            console.log(str);
 		        }
 	        }
 	    }

@@ -64,7 +64,6 @@ var BUILD = {
 	        	obj[s[0]] = s[1];
 	        }
         }
-        console.log(obj)
         return obj;
     },
     buildCSVArray: function(d) {
