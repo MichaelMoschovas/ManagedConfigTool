@@ -85,7 +85,7 @@ var SETUP = {
 	            input.type = "checkbox";
 	            input.id = "analytics_" + MODULES[key].code;
 	            input.addEventListener("change", function(e) {
-	                CONTROLLER.logAnalytics(e.target, MODULES[key].code);
+	                CONTROLLER.logModules(e.target, MODULES[key].code);
 	            });
 	            span.className = "checkmark";
 	            label.appendChild(text);

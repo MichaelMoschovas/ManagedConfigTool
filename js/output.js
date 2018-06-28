@@ -42,10 +42,9 @@ var OUTPUT = {
 	    /*----------------- Function called to build module array ---------------*/
 	    /*-----------------------------------------------------------------------*/
 		var modV = '';
-		if (CONTROLLER.bids.length > 0) modV += STRINGS.customString(modV, CONTROLLER.bids.sort(STRINGS.sortArrAlpha));
-	    if (CONTROLLER.analytics.length > 0) modV += STRINGS.customString(modV, CONTROLLER.analytics.sort(STRINGS.sortArrAlpha));
-	    if (CONTROLLER.modules.length > 0) modV += STRINGS.customString(modV, CONTROLLER.modules.sort(STRINGS.sortArrAlpha));
-
+		if (CONTROLLER.bids.length > 0) modV = STRINGS.customString(modV, CONTROLLER.bids.sort(STRINGS.sortArrAlpha));
+	    if (CONTROLLER.analytics.length > 0) modV = STRINGS.customString(modV, CONTROLLER.analytics.sort(STRINGS.sortArrAlpha));
+	    if (CONTROLLER.modules.length > 0) modV = STRINGS.customString(modV, CONTROLLER.modules.sort(STRINGS.sortArrAlpha));
 	    return modV;
 	},
 	setQue : function(){
