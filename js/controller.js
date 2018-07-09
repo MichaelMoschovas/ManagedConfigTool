@@ -287,19 +287,20 @@ var CONTROLLER = {
                     if(el.className.match(/array/gi)){
                         val = (el.value.match(/,/gi)) ? el.value.split(/,/gi) : [el.value];
                         for(var l = 0; l < val.length; l++){
-                        val[l] = val[l].replace(/\s/g,"");
-                        if(val[l].length == 0){
-                            val.splice(l,1);
+                            val[l] = val[l].replace(/\s/g,"");
+                            if(val[l].length == 0){
+                                val.splice(l,1);
+                            }
                         }
                     }
-                    }
                     else{
+                    
                         val = el.value.replace(/\s/g,"");
                     }
                     o.hasOwnProperty(v) ? o[v][el.id.replace(v+"-","")] = val : o[v] = {[el.id.replace(v+"-","")]:val};
                 }
             });
-            CONTROLLER.other.push(o);
+            if(Object.keys(o).length > 0) CONTROLLER.other.push(o);
         }
         CONTROLLER.formCheck();
     },

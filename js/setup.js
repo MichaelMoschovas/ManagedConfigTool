@@ -102,12 +102,26 @@ var SETUP = {
         for (const key in INPUTS) {
             var el = document.getElementById(key),c = 0;
             for(const attr in INPUTS[key]){
-                var container = document.createElement("DIV"), title = document.createElement("SPAN"), label = document.createElement("LABEL"), input = document.createElement("INPUT");
+                var container = document.createElement("DIV"), title = document.createElement("SPAN"), label = document.createElement("LABEL"), input = document.createElement("INPUT"), select = document.createElement("SELECT");
                 container.className = "menu_item_select_other-custom-contain-input "+key;
                 title.className = "menu_item_select_other-custom-title";
                 title.innerHTML = INPUTS[key][attr].name; 
                 input.id = key + "-" + INPUTS[key][attr].code;
                 input.type = (INPUTS[key][attr].type == 2) ? "checkbox" : ((INPUTS[key][attr].type == 1) ? "number" : "text");
+                if(INPUTS[key][attr].type == 5){
+                    select.id = key + "-" + INPUTS[key][attr].code;
+                    select.addEventListener("change", function(event){
+                        CONTROLLER["logCustom"](event,key);
+                    });
+                    for(var i = 0; i < INPUTS[key][attr].vals.length; i++){
+                        var o = document.createElement("OPTION");
+                        o.value =  INPUTS[key][attr].vals[i];
+                        o.innerHTML = INPUTS[key][attr].vals[i].toUpperCase();
+                        select.appendChild(o);
+                    }
+                    label.className = "menu_item_select_other-select";
+                    label.appendChild(select);
+                }
                 if(input.type == "checkbox"){
                     label.className = "menu_item_select_other-switch";
                     var v = document.createElement("SPAN"),s = document.createElement("SPAN");
@@ -119,7 +133,7 @@ var SETUP = {
                     label.appendChild(input);
                     label.appendChild(v);
                     label.appendChild(s);
-                }else{
+                }else if(INPUTS[key][attr].type != 5){
                     label.className = "menu_item_select_other-input";
                     if(input.type == "number"){
                         input.addEventListener("keypress", function(event) {
@@ -134,12 +148,13 @@ var SETUP = {
 
                 container.appendChild(title);
                 container.appendChild(label);
+
                 
                 if(INPUTS[key][attr].required){
-                    (INPUTS[key][attr].type == 3) ? input.className = "array " + key+"_required" : input.className = key+"_required";
+                    (INPUTS[key][attr].type == 5) ? select.className = key+"_required" : ((INPUTS[key][attr].type == 3) ? input.className = "array " + key+"_required" : input.className = key+"_required");
                     el.append(container);
                 }else{
-                    (INPUTS[key][attr].type == 3) ? input.className = "array " + key+"_optional" : ((INPUTS[key][attr].type == 4) ? input.className = "object " + key+"_optional" : input.className = key+"_optional");
+                    (INPUTS[key][attr].type == 5) ? select.className = key+"_optional" : ((INPUTS[key][attr].type == 3) ? input.className = "array " + key+"_optional" : ((INPUTS[key][attr].type == 4) ? input.className = "object " + key+"_optional" : input.className = key+"_optional"));
                     if(c == 0){
                         var o = document.createElement("DIV"), ot = document.createElement("DIV");
                         o.className = "menu_item_select_other-custom-optional";
