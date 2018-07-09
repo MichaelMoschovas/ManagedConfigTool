@@ -7,7 +7,7 @@ var CONTROLLER = {
     bidders : [],
 	analytics : [],
 	modules : [],
-	precision : {value:"med"},
+	precision : {value:"medium"},
     other : [],
 	passQA : false,
     valid: false,

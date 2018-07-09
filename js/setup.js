@@ -170,7 +170,7 @@ var SETUP = {
             el.childNodes[1].checked=false;
         });
     	//Granularity is set to medium by default
-    	document.getElementById("gran-med").checked = true;
+    	document.getElementById("gran-medium").checked = true;
     },
     setCustomScrolls: function(){
     	/*-----------------------------------------------------------------------*/
