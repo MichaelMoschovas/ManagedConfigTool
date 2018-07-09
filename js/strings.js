@@ -60,6 +60,8 @@ var STRINGS = {
 	        		//If value is an object, setup output with a return from passing 
 	        		//object to object string constructor function
 	        		str += tab + p + ':' + STRINGS.objToString(obj[p],f+1) + '\n';
+	        	}else if(!Number(obj[p])&&typeof obj[p] != "boolean"&&obj[p].match(/^\{.+:.+\}/gi)){
+	        		str += tab + p + ':' + STRINGS.objToString(BUILD.buildObject(obj[p]),f+1) + '\n';
 	        	}
 	        	else{
 		            //Construct value as output string

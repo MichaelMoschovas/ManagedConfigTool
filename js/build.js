@@ -4,6 +4,7 @@ var BUILD = {
 	    /*------------- Function called to build array from file data -----------*/
 	    /*-----------------------------------------------------------------------*/
         var arr = [];
+        arg = arg.replace(/\s/g,"").replace(/^\[/,"").replace(/\]$/g,"");
 
         if (arg.match(/,/gi)) {
             var argS = arg.split(",");
@@ -27,7 +28,7 @@ var BUILD = {
             }
             arr.push(inArr);
         }else {
-            return (Number(arg)) ? Number(arg) : arg;
+            return (Number(arg)) ? Number(arg) : arg.replace(/['" ]/g,"");
         }
         return arr;
     },
@@ -36,8 +37,12 @@ var BUILD = {
 	    /*------------- Function called to build object from file data ----------*/
 	    /*-----------------------------------------------------------------------*/
         var obj = {}, o = arg.replace(/^{/,"").replace(/}$/g,"");
+
         var splitAttributes = function(e){
-        	var out = e.match(/([^_,]|_.)+/g);
+        	var out = e.match(/([^_,]|_+.)+/g);
+        	for(var i = 0; i < out.length; i++){
+        		out[i] = out[i].replace(/_,/gi,",");
+        	}
         	var ret = out;
         	return ret;
         };
@@ -46,7 +51,7 @@ var BUILD = {
         	var ret = e.split(/:(.+)/);
         	return ret;
         };
-
+        
         if(o.match(/,/gi)) {
         	var a = splitAttributes(o);
         	for(var i = 0; i < a.length; i++){
@@ -54,10 +59,10 @@ var BUILD = {
         		if(t[1].match(/^\{.+:.+\}/gi)){
         			obj[t[0]] = BUILD.buildObject(t[1]);
         		}else if(t[1].match(/,/gi)){
-        			t[1] = t[1].replace("_,",",");
+        			t[1] = t[1].replace(/_,/gi,",");
         			obj[t[0]] = BUILD.buildArray(t[1]);
         		}else{
-	        		obj[t[0]] = t[1];
+	        		obj[t[0]] = t[1].replace(/['"]/g,"");
 	        	}
         	}
         }else{
@@ -67,7 +72,7 @@ var BUILD = {
         	}else if(s[1].match(/,/gi)){
         		obj[s[0]] = BUILD.buildArray(s[1]);
         	}else{
-	        	obj[s[0]] = s[1];
+	        	obj[s[0]] = s[1].replace(/['"]/g,"");
 	        }
         }
         return obj;
@@ -180,6 +185,9 @@ var BUILD = {
         /*------------- for each row in array excluding header rows -------------*/
         /*------------------ and store values in pattern object -----------------*/
         /*-----------------------------------------------------------------------*/
+		while(CONTROLLER.bidders.length > 0){
+			CONTROLLER.bidders.pop();
+		}
         var arr = [],pass = 0;
         //Loop through array starting with third index (first two indexes are header information)
         for (var i = 2; i < a.length; i++) {
@@ -196,6 +204,7 @@ var BUILD = {
                         //If value exists and top header for cell is not blank, construct new bidder
                         //object with parameter or add paramter to existing bidder object
                         obj = BUILD.getBidders(obj,a,key,i);
+                        CONTROLLER.addBidder(a[0][key]);
                     } else if (a[1][key].match(/Div.ID/gi)) {
                         //Add div id
                         obj = BUILD.getCode(obj,a,key,i);

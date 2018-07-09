@@ -8,14 +8,7 @@
 	<link href="https://fonts.googleapis.com/css?family=Martel+Sans:300,400,600,700,800" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Oswald:400,500,600,700" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800" rel="stylesheet">
-	<script src="js/jquery-3.3.1.min.js" type="text/javascript"></script>  
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.0/xlsx.full.min.js"></script>
-	<script src="js/strings.js"></script>
-	<script src="js/controller.js"></script>
 	<script src="js/setup.js"></script>
-	<script src="js/build.js"></script>
-	<script src="js/message.js"></script>
-	<script src="js/output.js"></script>
 </head>
 <body>
 <header class="header">
@@ -32,7 +25,7 @@
 				<div class="download_container unavailable" id="download_button" onclick="CONTROLLER.downloadFile()">
 					<span>DOWNLOAD <img id="download_image" height="15" width="15" src="images/download-unavailable.png"/></span>
 				</div>
-				<div class="menu_error"><div class="menu_error-close" onclick="MESSAGE.resetMessage()">x</div><div class="menu_error-icon"><img height="25px" width="25px" src="images/error.png"/></div><div class="menu_error-text" id="errorlog"></div></div>
+				<div class="menu_error"><div class="menu_error-close" onclick="MESSAGE.reset()">x</div><div class="menu_error-icon"><img height="25px" width="25px" src="images/error.png"/></div><div class="menu_error-text" id="errorlog"></div></div>
 			</div>
 		</div>
 		<div class="menu">
@@ -48,7 +41,7 @@
 				</div>
 				<input type="file" id="file" class="hidden" onchange="CONTROLLER.readFile(event)"/>
 			</div>
-			<div class="menu_item" id="mi_custom">
+			<div class="menu_item menu_custom" id="mi_custom">
 				<div class="menu_item_sidebar menu_item_section">
 					<div class="menu_item_sidebar_container">
 						<div class="menu_item_sidebar_title">OPTIONS</div>
@@ -127,19 +120,36 @@
 						<div class="menu_item_select_list" id="select_other">
 							<div class="menu_item_select_title">SELECT OTHER OPTIONS TO INCLUDE</div>
 							<div class="menu_item_select_other" id="other_contain">
-								<div class="menu_item_select_other-bidsend other_options">
-									<span class="menu_item_select_other-bidsend-title">Enable Send All Bids:</span>
-									<label class="menu_item_select_other-switch other">
-										<input id="bidsend-value" type="checkbox" onchange="CONTROLLER.enableSendAll(event)"><span class="switch_value other"></span><span class="switch_slider other"></span>
-									</label>
+								<div class="menu_item_select_other-custom other_options special_input">
+									<div class="menu_item_select_other-custom-section-title expandable"><div class="option_toggle" id="toggle-bidderTimeout" onclick="SETUP.toggleOptions(event)"></div>BIDDER TIMEOUT</div>
+									<div class="menu_item_select_other-custom-section hidden" id="bidderTimeout"></div>
 								</div>
-								<div class="menu_item_select_other-bidtime other_options">
-									<span class="menu_item_select_other-bidtime-title">Set Bidder Timeout:</span>
-									<label class="menu_item_select_other-input">
-										<input id="bidtime-value" type="number" onkeyup="CONTROLLER.logTimeout(event)">
-									</label>
+								<div class="menu_item_select_other-custom other_options special_input">
+									<div class="menu_item_select_other-custom-section-title expandable"><div class="option_toggle" id="toggle-bidderSequence" onclick="SETUP.toggleOptions(event)"></div>BIDDER SEQUENCE</div>
+									<div class="menu_item_select_other-custom-section hidden" id="bidderSequence"></div>
 								</div>
-							</div>
+								<div class="menu_item_select_other-custom other_options special_input">
+									<div class="menu_item_select_other-custom-section-title expandable"><div class="option_toggle" id="toggle-enableSendAllBids" onclick="SETUP.toggleOptions(event)"></div>SEND ALL BIDS</div>
+									<div class="menu_item_select_other-custom-section hidden" id="enableSendAllBids"></div>
+								</div>
+								<div class="menu_item_select_other-custom other_options special_input">
+									<div class="menu_item_select_other-custom-section-title expandable"><div class="option_toggle" id="toggle-userSync" onclick="SETUP.toggleOptions(event)"></div>USER SYNC</div>
+									<div class="menu_item_select_other-custom-section hidden" id="userSync"></div>
+								</div>
+								<div class="menu_item_select_other-custom other_options special_input">
+									<div class="menu_item_select_other-custom-section-title expandable"><div class="option_toggle" id="toggle-publisherDomain" onclick="SETUP.toggleOptions(event)"></div>PUBLISHER DOMAIN</div>
+									<div class="menu_item_select_other-custom-section hidden" id="publisherDomain"></div>
+								</div>
+								<div class="menu_item_select_other-custom other_options special_input">
+									<div class="menu_item_select_other-custom-section-title expandable"><div class="option_toggle" id="toggle-cookieSyncDelay" onclick="SETUP.toggleOptions(event)"></div>COOKIE SYNC DELAY</div>
+									<div class="menu_item_select_other-custom-section hidden" id="cookieSyncDelay"></div>
+								</div>
+								<div class="menu_item_select_other-custom other_options special_input hidden" id="s2sConfig">
+									<div class="menu_item_select_other-custom-section-title">PREBID SERVER</div>
+								</div>
+								<script type="text/javascript" src="js/input.js"></script>
+								<script>SETUP.setupCutomInputs();</script>
+							<div class="menu_item_select_other-scroll" id="other_scroll"><img height="30" width="30" src="images/arrow.png"/></div>
 						</div>
 					</div>
 				</div>
@@ -165,6 +175,14 @@
 	</div>
 </div>
 
+<script src="js/jquery-3.3.1.min.js" type="text/javascript"></script>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.0/xlsx.full.min.js"></script>
+<script src="js/strings.js"></script>
+<script src="js/controller.js"></script>
+<script src="js/build.js"></script>
+<script src="js/message.js"></script>
+<script src="js/output.js"></script>
+<script src="js/validator.js"></script>
 
 <script>
 SETUP.init();

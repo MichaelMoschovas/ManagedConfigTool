@@ -61,9 +61,9 @@ var SETUP = {
 	            label.className = "menu_item_select_analytics-check";
 	            if(ANALYTICS[key].state == "legacy" || ANALYTICS[key].state == "stable") label.className += (" "+ANALYTICS[key].state);
 	            input.type = "checkbox";
-	            input.id = "analytics_" + ANALYTICS[key].display;
+	            input.id = "analytics_" + ANALYTICS[key].code;
 	            input.addEventListener("change", function(e) {
-	                CONTROLLER.logAnalytics(e.target, ANALYTICS[key].code);
+	                CONTROLLER.logAnalytics(e.target,ANALYTICS[key].code);
 	            });
 	            span.className = "checkmark";
 	            label.appendChild(text);
@@ -80,10 +80,10 @@ var SETUP = {
      	for (const key in MODULES) {
          	if (!document.getElementById("modules_" + MODULES[key].code)) {
             	var label = document.createElement("LABEL"),input = document.createElement("INPUT"),span = document.createElement("SPAN"),text = document.createTextNode(MODULES[key].name);
-	            label.className = "menu_item_select_analytics-check";
+	            label.className = "menu_item_select_modules-check";
 	            if(MODULES[key].state == "legacy" || MODULES[key].state == "stable") label.className += (" "+MODULES[key].state);
 	            input.type = "checkbox";
-	            input.id = "analytics_" + MODULES[key].code;
+	            input.id = "modules_" + MODULES[key].code;
 	            input.addEventListener("change", function(e) {
 	                CONTROLLER.logModules(e.target, MODULES[key].code);
 	            });
@@ -95,21 +95,80 @@ var SETUP = {
          	}
      	}
  	},
+    setupCutomInputs: function(){
+        /*-----------------------------------------------------------------------*/
+        /*------------- Function called to setup custom input fields ------------*/
+        /*-----------------------------------------------------------------------*/
+        for (const key in INPUTS) {
+            var el = document.getElementById(key),c = 0;
+            for(const attr in INPUTS[key]){
+                var container = document.createElement("DIV"), title = document.createElement("SPAN"), label = document.createElement("LABEL"), input = document.createElement("INPUT");
+                container.className = "menu_item_select_other-custom-contain-input "+key;
+                title.className = "menu_item_select_other-custom-title";
+                title.innerHTML = INPUTS[key][attr].name; 
+                input.id = key + "-" + INPUTS[key][attr].code;
+                input.type = (INPUTS[key][attr].type == 2) ? "checkbox" : ((INPUTS[key][attr].type == 1) ? "number" : "text");
+                if(input.type == "checkbox"){
+                    label.className = "menu_item_select_other-switch";
+                    var v = document.createElement("SPAN"),s = document.createElement("SPAN");
+                    v.className = "switch_value other";
+                    s.className = "switch_slider other";
+                    input.addEventListener("change", function(event){
+                        CONTROLLER["logCustom"](event,key);
+                    });
+                    label.appendChild(input);
+                    label.appendChild(v);
+                    label.appendChild(s);
+                }else{
+                    label.className = "menu_item_select_other-input";
+                    if(input.type == "number"){
+                        input.addEventListener("keypress", function(event) {
+                            if(event.charCode < 48 || event.charCode > 57) event.preventDefault();
+                        });
+                    }
+                    input.addEventListener("keyup", function(event){
+                        CONTROLLER["logCustom"](event,key);
+                    });
+                    label.appendChild(input);
+                }
+
+                container.appendChild(title);
+                container.appendChild(label);
+                
+                if(INPUTS[key][attr].required){
+                    (INPUTS[key][attr].type == 3) ? input.className = "array " + key+"_required" : input.className = key+"_required";
+                    el.append(container);
+                }else{
+                    (INPUTS[key][attr].type == 3) ? input.className = "array " + key+"_optional" : ((INPUTS[key][attr].type == 4) ? input.className = "object " + key+"_optional" : input.className = key+"_optional");
+                    if(c == 0){
+                        var o = document.createElement("DIV"), ot = document.createElement("DIV");
+                        o.className = "menu_item_select_other-custom-optional";
+                        o.id = key + "-optional";
+                        ot.className = "menu_item_select_other-custom-section-title";
+                        ot.innerHTML = "OPTIONAL";
+                        o.append(ot);
+                        el.append(o);
+                        c++;
+                    }
+                    document.getElementById(key + "-optional").append(container);
+                }
+            }
+        }
+    },
  	resetCachedInputs: function(){
  		/*-----------------------------------------------------------------------*/
     	/*------------ Function called to reset all caches checkboxes -----------*/
     	/*-----------------------------------------------------------------------*/
-    	var bidEls = document.getElementsByClassName("menu_item_select_bid-check"), modEls = document.getElementsByClassName("menu_item_select_modules-check"), analyticEls = document.getElementsByClassName("menu_item_select_analytics-check");
     	//Loop through all checkbox inputs and set checked to false
-    	for(var i = 0; i < bidEls.length; i++){
-    		bidEls[i].childNodes[1].checked=false;
-    	}
-    	for(var i = 0; i < modEls.length; i++){
-    		modEls[i].childNodes[1].checked=false;
-    	}
-    	for(var i = 0; i < analyticEls.length; i++){
-    		analyticEls[i].childNodes[1].checked=false;
-    	}
+        Array.from(document.querySelectorAll('.menu_item_select_bid-check')).forEach(function(el) {
+            el.childNodes[1].checked=false;
+        });
+        Array.from(document.querySelectorAll('.menu_item_select_modules-check')).forEach(function(el) {
+            el.childNodes[1].checked=false;
+        });
+        Array.from(document.querySelectorAll('.menu_item_select_analytics-check')).forEach(function(el) {
+            el.childNodes[1].checked=false;
+        });
     	//Granularity is set to medium by default
     	document.getElementById("gran-med").checked = true;
     },
@@ -119,11 +178,12 @@ var SETUP = {
     	/*----------- should be displayed inidicating to a user that ------------*/ 
     	/*------------------- the containing div is scrollable ------------------*/
     	/*-----------------------------------------------------------------------*/
-    	var b = document.getElementById("bid_contain"), a = document.getElementById("analytics_contain"),m = document.getElementById("modules_contain"), g = document.getElementById("granularity_contain"), bS = document.getElementById("bid_scroll"),aS = document.getElementById("analytics_scroll"),mS = document.getElementById("modules_scroll"),gS = document.getElementById("granularity_scroll");
+    	var b = document.getElementById("bid_contain"), a = document.getElementById("analytics_contain"),m = document.getElementById("modules_contain"), g = document.getElementById("granularity_contain"),o = document.getElementById("other_contain"), bS = document.getElementById("bid_scroll"),aS = document.getElementById("analytics_scroll"),mS = document.getElementById("modules_scroll"),gS = document.getElementById("granularity_scroll"),oS = document.getElementById("other_scroll");
     	b.scrollHeight > b.offsetHeight ? bS.style.display = "block" : bS.style.display = "none";
     	a.scrollHeight > a.offsetHeight ? aS.style.display = "block" : aS.style.display = "none";
     	m.scrollHeight > m.offsetHeight ? mS.style.display = "block" : mS.style.display = "none";
     	g.scrollHeight > g.offsetHeight ? gS.style.display = "block" : gS.style.display = "none";
+        o.scrollHeight > o.offsetHeight ? oS.style.display = "block" : oS.style.display = "none";
     },
     setFormToggle: function(e){
     	/*-----------------------------------------------------------------------*/
@@ -162,43 +222,61 @@ var SETUP = {
     	/*-----------------------------------------------------------------------*/
     	/*------- Function called to toggle between customization options -------*/
     	/*-----------------------------------------------------------------------*/
-    	var els = document.getElementsByClassName("menu_item_sidebar_option");
-    	for(var i = 0; i < els.length; i++){
-    		if(els[i].className.indexOf("selected")>-1&&els[i].id!="sidebar_"+e){
-    			els[i].className = els[i].className.replace(/ selected/g, "");
-    			document.getElementById("select_"+(els[i].id.split("_")[1])).className = document.getElementById("select_"+(els[i].id.split("_")[1])).className.replace(/ selected/g, "");
-    		}else if(els[i].id=="sidebar_"+e){
-    			els[i].className += " selected";
-    			document.getElementById("select_"+e).className += " selected";
-    		}
-    	}
+        Array.from(document.querySelectorAll('.menu_item_sidebar_option')).forEach(function(el) {
+            if(el.className.indexOf("selected")>-1&&el.id!="sidebar_"+e){
+                el.className = el.className.replace(/ selected/g, "");
+                document.getElementById("select_"+(el.id.split("_")[1])).className = document.getElementById("select_"+(el.id.split("_")[1])).className.replace(/ selected/g, "");
+            }else if(el.id=="sidebar_"+e){
+                el.className += " selected";
+                document.getElementById("select_"+e).className += " selected";
+            }
+        });
+    	
     	SETUP.setCustomScrolls();
     },
     toggleVersion: function(e){
     	/*-----------------------------------------------------------------------*/
     	/*------- Function called to toggle between customization options -------*/
     	/*-----------------------------------------------------------------------*/
-    	var elsL = document.getElementsByClassName("legacy"),elsS = document.getElementsByClassName("stable"), h, c;
-    	
-    	if(e.target.checked){
-    		c = elsS;
-    		h = elsL;
-    	}else{
-    		c = elsL;
-    		h = elsS;
-    	}
-    	for(var i = 0; i < h.length; i++){
-    		if(h[i].childNodes[1].checked){
-    			h[i].childNodes[1].checked = false;
-    			h[i].childNodes[1].dispatchEvent(CONTROLLER.event["change"]);
-	    	}
-    		h[i].style.display = "none";
-    	}
+        if(e.target.checked){
+            c = "stable";
+            h = "legacy";
+        }else{
+            c = "legacy";
+            h = "stable";
+        }
 
-    	for(var j = 0; j < c.length; j++){
-    		c[j].style.display = "inline-block";
-    	}
+        Array.from(document.querySelectorAll('.'+h)).forEach(function(el) {
+            if(el.childNodes[1].checked){
+                el.childNodes[1].checked = false;
+                el.childNodes[1].dispatchEvent(CONTROLLER.event["change"]);
+            }
+            el.style.display = "none";
+        });
+        Array.from(document.querySelectorAll('.'+c)).forEach(function(el) {
+            el.style.display = "inline-block";
+        });
 
     	SETUP.setCustomScrolls();
+    },
+    toggleOptions: function(e){
+        /*-----------------------------------------------------------------------*/
+        /*---------- Function called to toggle between optional inputs ----------*/
+        /*-----------------------------------------------------------------------*/
+        var el = document.getElementById(e.target.id.replace(/toggle-/i,""));
+        if(el.className.match(/hidden/)){
+            el.className = el.className.replace(/ hidden/gi,"");
+            e.target.className += " expanded";
+        }else{
+            el.className += " hidden";
+            e.target.className = e.target.className.replace(/ expanded/gi,"");
+        }
     }
 }
+
+
+
+
+
+
+

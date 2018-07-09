@@ -87,7 +87,11 @@ var OUTPUT = {
 		var str = "";
 		if(CONTROLLER.other.length > 0){
 			for(var i =0; i < CONTROLLER.other.length; i++){
-				str += ",\n\t\t\t"+CONTROLLER.other[i][0] + ": " + CONTROLLER.other[i][1];
+				if(Array.isArray(CONTROLLER.other[i])){
+					str += ",\n\t\t\t"+CONTROLLER.other[i][0] + ": " + CONTROLLER.other[i][1];}
+				else{
+					str += ",\n\t\t\t"+Object.keys(CONTROLLER.other[i])[0] + ":" + STRINGS.objToString(CONTROLLER.other[i][Object.keys(CONTROLLER.other[i])[0]],4);
+				}
 			}
 		}
 		return str;

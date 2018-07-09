@@ -1,7 +1,7 @@
 var MODULES = {
   currency: {
     name: 'Currency',
-    code: 'adkernelAdn',
+    code: 'currency',
     state: 'all'
   },
   express: {

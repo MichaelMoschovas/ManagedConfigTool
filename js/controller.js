@@ -4,17 +4,18 @@ var CONTROLLER = {
 	columns : 0,
 	patterns : [],
 	bids : [],
+    bidders : [],
 	analytics : [],
 	modules : [],
 	precision : {value:"med"},
     other : [],
 	passQA : false,
-	view : 0,
-	fC : false,
-	cC: false,
+    valid: false,
 	event : {},
 	url:{link:"",name:""},
-    beginParse: function(d,t) {
+    prebidserver: false,
+    currency: false,
+    begin: function(d,t) {
     	/*-----------------------------------------------------------------------*/
     	/*------------ Function called to begin file parsing process ------------*/
     	/*-----------------------------------------------------------------------*/
@@ -41,14 +42,13 @@ var CONTROLLER = {
 		CONTROLLER.patterns = [];
 		CONTROLLER.passQA = false;
 		CONTROLLER.bids = [];
+        CONTROLLER.bidders = [];
 		CONTROLLER.modules = [];
 		CONTROLLER.analytics = [];
 		CONTROLLER.precision = [];
 		CONTROLLER.precisionConfig = [];
-		CONTROLLER.view = 0;
-		CONTROLLER.fC = false;
-		CONTROLLER.cC = false;
-		MESSAGE.resetMessage();
+		CONTROLLER.valid = false;
+		MESSAGE.reset();
     },
     readFile: function(e){
     	/*-----------------------------------------------------------------------*/
@@ -56,7 +56,7 @@ var CONTROLLER = {
     	/*-------------- accept user uploaded file as input, and ----------------*/
     	/*------------ pass data to corresponding parser function ---------------*/
     	/*-----------------------------------------------------------------------*/
-    	MESSAGE.resetMessage();
+    	MESSAGE.reset();
         CONTROLLER.setLoader(); 
     	//Set file to target file
     	if(CONTROLLER.file=="") CONTROLLER.file = e;
@@ -73,7 +73,7 @@ var CONTROLLER = {
 		            var d = e.target.result;  
 		            //If file is excel type, then use XLSX to read data
 		            var w = x ? XLSX.read(d, { type: 'binary' }) : d; 
-		            x ? (f[0].name.match(regexXLSX) ? CONTROLLER.beginParse(w,"xlsx") : CONTROLLER.beginParse(w,"xls")) : CONTROLLER.beginParse(w,"csv");
+		            x ? (f[0].name.match(regexXLSX) ? CONTROLLER.begin(w,"xlsx") : CONTROLLER.begin(w,"xls")) : CONTROLLER.begin(w,"csv");
 	            };
 	            reader.readAsBinaryString(f[0]); 
 	         }
@@ -95,55 +95,77 @@ var CONTROLLER = {
     	/*-- Function called to hide elements that do not match search string ---*/
     	/*-----------------------------------------------------------------------*/
     	var s = e.target.value;
-    	var regex = new RegExp(s,"gi"), els=document.getElementsByClassName("menu_item_select_bid-check");
+    	var regex = new RegExp(s,"gi");
 
     	//Loop through all bid input elements
-	    for(var i = 0; i < els.length; i++){
-	    	var m1 = els[i].childNodes[0].nodeValue, m2 = els[i].childNodes[1].id;
-	    	if(s==null||s==""||s.length<2){
-    			//If the passed string length is less than 2, remove all instances of hidden class
-	    		if(els[i].className.match(/hidden/gi)) els[i].className = els[i].className.replace(/ hidden/g, "");
-	    	}else if(m1.match(regex)==null&&m2.match(regex)==null&&s.length>=2){
-	    		//If the passed string length is greater than 2 and no match can be made, add class hidden
-	    		if(els[i].className.match(/hidden/gi)==null){
-	    			els[i].className += " hidden";
-	    		}
-	    	}else if((m1.match(regex)||m2.match(regex))&&s.length>=2){
-	    		//If the passed string length is greater than 2 and match can be made
-	    		//Check if class hidden exists and remove it
-	    		if(els[i].className.match(/hidden/gi)) els[i].className = els[i].className.replace(/ hidden/g, "");
-	    	}
-	    }
+        Array.from(document.querySelectorAll('.menu_item_select_bid-check')).forEach(function(el) {
+            var m1 = el.childNodes[0].nodeValue, m2 = el.childNodes[1].id;
+            if(s==null||s==""||s.length<2){
+                //If the passed string length is less than 2, remove all instances of hidden class
+                if(el.className.match(/hidden/gi)) el.className = el.className.replace(/ hidden/g, "");
+            }else if(m1.match(regex)==null&&m2.match(regex)==null&&s.length>=2){
+                //If the passed string length is greater than 2 and no match can be made, add class hidden
+                if(el.className.match(/hidden/gi)==null){
+                    el.className += " hidden";
+                }
+            }else if((m1.match(regex)||m2.match(regex))&&s.length>=2){
+                //If the passed string length is greater than 2 and match can be made
+                //Check if class hidden exists and remove it
+                if(el.className.match(/hidden/gi)) el.className = el.className.replace(/ hidden/g, "");
+            }
+        });
+        SETUP.setCustomScrolls();
+    },
+    addBidder: function(name){
+        if(CONTROLLER.bidders.length > 0){
+            var c = false;
+            for(var i = 0; i < CONTROLLER.bidders.length; i++){
+                if(CONTROLLER.bidders[i]==name) c = true;
+            }
+            if(!c) CONTROLLER.bidders.push(name);
+        }else{
+            CONTROLLER.bidders.push(name);
+        }
     },
     displayBidsPreview: function(el,t){
     	/*-----------------------------------------------------------------------*/
     	/*------ Function called to display preview of selected checkboxes ------*/
     	/*-----------------------------------------------------------------------*/
-    	var id = el.id.split("_")[1].replace(/BIDADAPTER/i,"");
+    	var id = el.id.split("_")[1].replace(/BIDADAPTER/i,"").replace(/ANALYTICSADAPTER/i,"");
     	var div = document.createElement("DIV"), span = document.createElement("SPAN"), text = document.createTextNode(id.toUpperCase()),target = document.getElementById(t+"_preview");
     	div.id= id+"-preview-"+t;
     	span.innerHTML = "x";
     	span.addEventListener("click", function(e) {
-			t == "bid" ? CONTROLLER.removeBidsPreview(id+"BidAdapter",t) : CONTROLLER.removeBidsPreview(id,t);
+            if(t == "bid"){
+                document.getElementById(t+"_"+id+"BidAdapter").checked=false;
+                CONTROLLER.logBids(document.getElementById(t+"_"+id+"BidAdapter"),id+"BidAdapter");
+            }else{
+                if(t=="analytics"){
+                    document.getElementById(t+"_"+id+"AnalyticsAdapter").checked=false;
+                    CONTROLLER.logAnalytics(document.getElementById(t+"_"+id+"AnalyticsAdapter"),id+"AnalyticsAdapter");
+                }else{
+                    document.getElementById(t+"_"+id).checked=false;
+                    CONTROLLER.logModules(document.getElementById(t+"_"+id),id);
+                }
+
+            }
 		});
     	div.appendChild(text);
     	div.appendChild(span);
     	target.appendChild(div);
     	if(target.className.indexOf("display")==-1) target.className += " display";
-    	t == "bid" ? document.getElementById(t+"_contain").style.height = "280px" : document.getElementById(t+"_contain").style.height = "300px";
     	SETUP.setCustomScrolls();
     },
     removeBidsPreview: function(id,t){
     	/*-----------------------------------------------------------------------*/
     	/*------- Function called to remove preview of passed checkbox id -------*/
     	/*-----------------------------------------------------------------------*/
-    	var el = document.getElementById(id.replace(/BIDADAPTER/i,"")+"-preview-"+t),input = document.getElementById(t+"_"+id);
+    	var el = document.getElementById(id.replace(/BIDADAPTER/i,"").replace(/ANALYTICSADAPTER/i,"")+"-preview-"+t),input = document.getElementById(t+"_"+id);
     	var p = el.parentNode;
     	el.parentNode.removeChild(el);
     	input.checked = false;
     	if(!p.hasChildNodes()){ 
     		p.className = p.className.replace(/ display/gi,"");
-    		t == "bid" ? document.getElementById(t+"_contain").style.height = "340px" : document.getElementById(t+"_contain").style.height = "360px";
     		SETUP.setCustomScrolls();
     	}
     	if(t == "bid" && !document.getElementById(t+"_preview").hasChildNodes()) CONTROLLER.bids = [];
@@ -163,7 +185,20 @@ var CONTROLLER = {
 	    	}
 	    	CONTROLLER.removeBidsPreview(el.id.replace(/bid_/i,""),"bid");
     	}
+        CONTROLLER.serverInput(el,el.checked);
     	CONTROLLER.formCheck();
+    },
+    serverInput: function(e,bool){
+        if(e.id.match(/prebidserver/gi)){
+            var el = document.getElementById("s2sConfig");
+            if(bool){
+                document.getElementById("s2sConfig").className = document.getElementById("s2sConfig").className.replace(/ hidden/i,"");
+                CONTROLLER.prebidserver = true;
+            }else{
+                document.getElementById("s2sConfig").className += " hidden";
+                CONTROLLER.prebidserver = false;
+            }
+        }
     },
     logAnalytics: function(el,t){
     	/*-----------------------------------------------------------------------*/
@@ -211,6 +246,62 @@ var CONTROLLER = {
     	}
     	CONTROLLER.formCheck();
     },
+    logCustom: function(e,v){
+        /*-----------------------------------------------------------------------*/
+        /*--- Function called on input change to update prebid server params ----*/
+        /*-----------------------------------------------------------------------*/
+        var c = true, o = {};
+        Array.from(document.querySelectorAll('.'+v+'_required')).forEach(function(el) {
+            var val;
+            if(!el.value){
+                c = false;
+            }else if(el.type=="checkbox"){
+                o.hasOwnProperty(v) ? o[v][el.id.replace(v+"-","")] = el.checked : o[v] = {[el.id.replace(v+"-","")]:el.checked};
+            }else{
+                if(el.className.match(/array/gi)){
+                    val = (el.value.match(/,/gi)) ? el.value.split(/,/gi) : [el.value];
+                    for(var l = 0; l < val.length; l++){
+                        val[l] = val[l].replace(/\s/g,"");
+                        if(val[l].length == 0){
+                            val.splice(l,1);
+                        }
+                    }
+                }else{
+                    val = el.value.replace(/\s/g,"");
+                }
+                o.hasOwnProperty(v) ? o[v][el.id.replace(v+"-","")] = val : o[v] = {[el.id.replace(v+"-","")]:val};
+            }
+        });
+        for(var j = 0; j < CONTROLLER.other.length; j++){
+            if(CONTROLLER.other[j].hasOwnProperty(v)){
+                CONTROLLER.other.splice(j,1);
+            }
+        }
+        if(c){
+             Array.from(document.querySelectorAll('.'+v+'_optional')).forEach(function(el) {
+                var val;
+                if(el.type=="checkbox"){
+                    o.hasOwnProperty(v) ? o[v][el.id.replace(v+"-","")] = el.checked : o[v] = {[el.id.replace(v+"-","")]:el.checked};
+                }else if(el.value){
+                    if(el.className.match(/array/gi)){
+                        val = (el.value.match(/,/gi)) ? el.value.split(/,/gi) : [el.value];
+                        for(var l = 0; l < val.length; l++){
+                        val[l] = val[l].replace(/\s/g,"");
+                        if(val[l].length == 0){
+                            val.splice(l,1);
+                        }
+                    }
+                    }
+                    else{
+                        val = el.value.replace(/\s/g,"");
+                    }
+                    o.hasOwnProperty(v) ? o[v][el.id.replace(v+"-","")] = val : o[v] = {[el.id.replace(v+"-","")]:val};
+                }
+            });
+            CONTROLLER.other.push(o);
+        }
+        CONTROLLER.formCheck();
+    },
     preSelectBidder: function(n){
     	/*-----------------------------------------------------------------------*/
     	/*----- Function called to preselect bid adapters from spreadsheet ------*/
@@ -230,6 +321,7 @@ var CONTROLLER = {
     			break;
     		} 
     	}
+
     	if(!found){
     		MESSAGE.printMessage(5,n);
     	}
@@ -238,103 +330,92 @@ var CONTROLLER = {
     	/*-----------------------------------------------------------------------*/
     	/*----- Function called to preselect bid adapters from spreadsheet ------*/
     	/*-----------------------------------------------------------------------*/
-    	var elsG = document.getElementsByClassName("granularity_check"),elsC = document.getElementsByClassName("module_precision_container");
+    	Array.from(document.querySelectorAll('.granularity_check')).forEach(function(el) {
+            el.checked = false;
+            if(el.id.toLowerCase() == "gran-"+t && t != "custom"){
+                el.checked = true;
+                CONTROLLER.resetBuckets();
+                Array.from(document.querySelectorAll('.module_precision_container')).forEach(function(c) {
+                    c.style.display = "none";
+                });
+            }
+            else if(el.id.toLowerCase() == "gran-"+t && t=="custom"){
+                el.checked = true;
+                Array.from(document.querySelectorAll('.module_precision_container')).forEach(function(c) {
+                    c.style.display = "block";
+                });
+            }
+        });
 
-    	for(var i = 0; i < elsG.length; i++){
-    		elsG[i].checked = false;
-	    	if(elsG[i].id.toLowerCase() == "gran-"+t && t != "custom"){
-				elsG[i].checked = true;
-				CONTROLLER.resetBuckets();
-	    	}
-	    	else if(elsG[i].id.toLowerCase() == "gran-"+t && t=="custom"){
-	    		elsG[i].checked = true;
-	    		for(var j = 0; j < elsC.length; j++){
-	    			elsC[j].style.display = "block";
-	    		}
-	    	}
-    	}
     	CONTROLLER.formCheck();
     	CONTROLLER.logPrecision(t);
     	SETUP.setCustomScrolls();
-    },
-    enableSendAll : function(e){
-        if(e.target.checked){
-            CONTROLLER.other.push(["enableSendAllBids",true]);
-        }else{
-            if(CONTROLLER.other.length > 0){
-                for(var i = 0; i < CONTROLLER.other.length; i++){
-                    if(CONTROLLER.other[i][0]=="enableSendAllBids") CONTROLLER.other.splice(i,1)
-                }
-            }   
-        }
-    },
-    logTimeout : function(e){
-        if(CONTROLLER.other.length > 0){
-            for(var i = 0; i < CONTROLLER.other.length; i++){
-                if(CONTROLLER.other[i][0]=="bidderTimeout") CONTROLLER.other.splice(i,1)
-            }
-        }
-        if(e.target.value!=""&&e.target.value>0){
-            CONTROLLER.other.push(["bidderTimeout",e.target.value]);
-        }
     },
    	formCheck: function(){
    		/*-----------------------------------------------------------------------*/
     	/*------- Function called to determine if download button should --------*/
     	/*------------------- be available for user to click --------------------*/
     	/*-----------------------------------------------------------------------*/
-   		var el = document.getElementById("download_button");
-   		(CONTROLLER.file && CONTROLLER.file!="" && CONTROLLER.passQA && CONTROLLER.patterns.length > 0) ? CONTROLLER.fC = true : CONTROLLER.fC = false;
+   		var el = document.getElementById("download_button"), c = document.querySelectorAll('.display_required').length, u;
 
-   		if(typeof CONTROLLER.precision.value == "object" && CONTROLLER.precision.value.hasOwnProperty("buckets") && CONTROLLER.checkBuckets() && CONTROLLER.bids.length > 0){
-   			CONTROLLER.cC = true;
-   		}else if(typeof CONTROLLER.precision.value != "object" && CONTROLLER.bids.length && CONTROLLER.bids.length > 0){
-   			CONTROLLER.cC = true;
-   		}else{
-   			CONTROLLER.cC = false;
-   		}
+        var err = VALIDATOR.init();
+        CONTROLLER.removeRequireDisplay();
 
-   		if(CONTROLLER.fC && CONTROLLER.cC){
+        CONTROLLER.valid = (err=="VALIDATED") ? true : false;
+
+   		if(CONTROLLER.valid){
    			el.className = el.className.replace(/ unavailable/g, "");
    			document.getElementById("download_image").src = "images/download.png";
-   			if(document.getElementById("errorlog").innerHTML.match(/(NOTICE:)|(WARNING:)/g)==null) MESSAGE.resetMessage();
+   			if(!document.getElementById("errorlog").innerHTML.match(/(NOTICE:)|(WARNING:)/g)) MESSAGE.reset();
    		}else{
    			if(el.className.indexOf("unavailable")==-1) el.className += " unavailable";
    			document.getElementById("download_image").src = "images/download-unavailable.png";
-   			if(document.getElementById("errorlog").style.display=="block"){
-	   			MESSAGE.resetMessage();
-	    		var errors=[];
-	    		if(!CONTROLLER.fC){ 
-					errors.push("File has not been uploaded");
-				}
-				if(!CONTROLLER.cC){
-					if(CONTROLLER.bids.length == 0) errors.push("No BID Adapters have been included");
-					if(typeof CONTROLLER.precision.value == "object" && CONTROLLER.precision.value.hasOwnProperty("buckets") && !CONTROLLER.checkBuckets()) errors.push("Granularity values MUST be inputed into bucket fields");
-				}
-				MESSAGE.printMessage(3,errors);
+   			if(document.getElementById("errorlog").parentNode.style.display=="block"){
+                //CONTROLLER.setFocus(err[1],false);
+	   			MESSAGE.reset();
 			}
    		}
    	},
-   	checkBuckets:function(){
-   		/*-----------------------------------------------------------------------*/
-    	/*--------- Function called to determine if custom granularity ----------*/
-    	/*--------------------- fields have been completed ----------------------*/
-    	/*-----------------------------------------------------------------------*/
-   		var c = true;
-
-   		if(CONTROLLER.precision.value.buckets.length == 0) return false;
-
-    	for(var i =0; i < CONTROLLER.precision.value.buckets.length; i++){
-    		for(var key in CONTROLLER.precision.value.buckets[i]){
-    			if(CONTROLLER.precision.value.buckets[i][key][0].length == 0) return false;
-	    		for(var j =0; j < CONTROLLER.precision.value.buckets[i][key][0].length; j++){
-		    		if(CONTROLLER.precision.value.buckets[i][key][0][j]==""||CONTROLLER.precision.value.buckets[i][key][0][j]==null) c = false
-		    	}
-                if(CONTROLLER.precision.value.buckets[i][key][0][3]<=0||CONTROLLER.precision.value.buckets[i][key][0][2]<=0) c = false
-		    }
-    	}
-    	return c;
-   	},
+    setFocus: function(e,bool,c){
+        var f = document.getElementById("toogle_file"), c = document.getElementById("toogle_custom");
+        for(var i = 0; i < e.length; i++){
+            if(e[i][0]==0){
+                if(!f.className.match(/display_required/i)) f.className += " display_required";
+            }else if(e[i][0]==1){
+                var el = document.getElementById("sidebar_"+e[i][3]);
+                if(!e[i][1].className.match(/display_required/i)) e[i][1].className += " display_required";
+                if(!c.className.match(/display_required/i)) c.className += " display_required";
+                if(!el.className.match(/display_required/i)) el.className += " display_required";
+            }else{
+                var el = document.getElementById("sidebar_"+e[i][3]);
+                if(!c.className.match(/display_required/i)) c.className += " display_required";
+                if(!el.className.match(/display_required/i)) el.className += " display_required";
+                for(var el in e[i][1]){
+                    if(e[i][1][el].childNodes){
+                        if(e[i][1][el].childNodes[1].childNodes[0].className.match(/required/i)&&!e[i][1][el].childNodes[1].childNodes[0].className.match(/display_required/i)&&e[i][1][el].childNodes[1].childNodes[0].value=="") e[i][1][el].childNodes[1].childNodes[0].className += " display_required";
+                    }
+                }
+            }
+        }
+        if(bool){
+            if(e[0][0]==0){
+                SETUP.setFormToggle(e[0][2]);
+                e[0][1].focus();
+            }else if(e[0][0]==1){
+                SETUP.setFormToggle(e[0][2]);
+                SETUP.setCustomToggle(e[0][3]);
+                e[0][1].focus();
+            }else{
+                SETUP.setFormToggle(e[0][2]);
+                SETUP.setCustomToggle(e[0][3]);
+            }
+        }
+    },
+    removeRequireDisplay: function(){
+        Array.from(document.querySelectorAll('.display_required')).forEach(function(el) {
+            el.className = el.className.replace(/ display_required/i,"");
+        });
+    },
     appendBucket: function(){
     	/*-----------------------------------------------------------------------*/
     	/*--------- Function called to append a new granularity bucket ----------*/
@@ -458,19 +539,15 @@ var CONTROLLER = {
     	el.parentNode.removeChild(el);
     	SETUP.setCustomScrolls();
     },
-    resetBuckets: function(e){
+    resetBuckets: function(){
     	/*-----------------------------------------------------------------------*/
     	/*---------- Function called to remove all granularity buckets ----------*/
     	/*-------------------------- excluding default --------------------------*/
     	/*-----------------------------------------------------------------------*/
-    	var elsGranC = document.getElementsByClassName("module_precision_bucket"),elsGranP = document.getElementsByClassName("module_precision_container");
-    	elsGranP[0].style.display = "none";
+        Array.from(document.querySelectorAll('.module_precision_bucket')).forEach(function(el) {
+            if(el.id != "bucket_1") el.parentNode.removeChild(el);
+        });
 
-    	if(elsGranC.length>1){
-	    	for(var i = 1; i < elsGranC.length; i++){
-		    	elsGranC[i].parentNode.removeChild(elsGranC[i]);
-		    }
-		}
 		SETUP.setCustomScrolls();
     },
     displayFileName: function(){
@@ -496,21 +573,22 @@ var CONTROLLER = {
         /*-----------------------------------------------------------------------*/
         /*------------ Function called to reset pattern object values -----------*/
         /*-----------------------------------------------------------------------*/
-        var elDrop = document.getElementById("fileinput"), elDisplay = document.getElementById("filedisplay"), bidEl = document.getElementsByClassName("menu_item_select_bid-check");
+        var elDrop = document.getElementById("fileinput"), elDisplay = document.getElementById("filedisplay");
         elDisplay.className+=" hidden";
         elDrop.className = elDrop.className.replace(/ hidden/g, "");
         
         CONTROLLER.file="";
         CONTROLLER.patterns = [];
-        CONTROLLER.fC=false;
+        CONTROLLER.bidders = [];
+        CONTROLLER.valid=false;
         CONTROLLER.columns = 0;
 
-        for(var i = 0; i < bidEl.length; i++){
-            if(bidEl[i].childNodes[1].checked) {
-                bidEl[i].childNodes[1].checked = false;
-                bidEl[i].childNodes[1].dispatchEvent(CONTROLLER.event["change"]);
+        Array.from(document.querySelectorAll('.menu_item_select_bid-check')).forEach(function(el) {
+            if(el.childNodes[1].checked) {
+                el.childNodes[1].checked = false;
+                el.childNodes[1].dispatchEvent(CONTROLLER.event["change"]);
             }
-        }
+        });
         
         document.getElementById("file").value = "";
 
@@ -521,7 +599,7 @@ var CONTROLLER = {
     	/*-------------------- Function called to reset file  -------------------*/
     	/*-----------------------------------------------------------------------*/
     	CONTROLLER.resetValues();
-    	MESSAGE.resetMessage();
+    	MESSAGE.reset();
     },
     checkArray: function(a){
     	/*-----------------------------------------------------------------------*/
@@ -559,8 +637,9 @@ var CONTROLLER = {
     	/*------- if form checks have been set to true, else error displays -----*/
     	/*------------ indicating what fields are currently missing -------------*/
     	/*-----------------------------------------------------------------------*/
-    	//Determine if form checks have been met
-    	if(CONTROLLER.fC&&CONTROLLER.cC){
+    	 CONTROLLER.removeRequireDisplay();
+        //Determine if form checks have been met
+    	if(CONTROLLER.valid){
     		//Call JS constructer to return output as string
 	    	var str = CONTROLLER.constructJS();
 	    	//Pass returned string to be converted to character code array for blob output
@@ -569,7 +648,7 @@ var CONTROLLER = {
 		    blob = new Blob( [ data ], {
 		        type: 'application/octet-stream'
 		    });
-			MESSAGE.resetMessage();
+			MESSAGE.reset();
 			CONTROLLER.url.link = URL.createObjectURL(blob);
 			CONTROLLER.url.name = CONTROLLER.file[0].name.replace(/(.csv)|(.xls)|(.xlsx)/i,"");
 			document.getElementById("download-link").setAttribute('href', CONTROLLER.url.link);
@@ -583,17 +662,10 @@ var CONTROLLER = {
 		    document.getElementById("save-name").focus();
 		}else{
 			//Output errors for missing information/incomplete data
-			var errors = [];
-			if(!CONTROLLER.fC){ 
-				errors.push("A file has not been uploaded. Please upload either a .csv, .xls, or .xlsx file to proceed. ");
-				SETUP.setFormToggle("file");
-			}
-			if(!CONTROLLER.cC){
-				if(CONTROLLER.bids.length == 0) errors.push("No Bid Adapters have been included. At least one Bid Adapter must be selected. ");
-				if(typeof CONTROLLER.precision.value == "object" && CONTROLLER.precision.value.hasOwnProperty("buckets") && !CONTROLLER.checkBuckets()) errors.push("Custom granularity has been selected, but no values have been inputted. Granularity values MUST be added into bucket fields. ");
-				if(CONTROLLER.fC) SETUP.setFormToggle("custom");
-			}
-			MESSAGE.printMessage(3,errors);
+            MESSAGE.reset();
+            var err = VALIDATOR.init();
+			MESSAGE.printMessage(3,err[0]);
+            CONTROLLER.setFocus(err[1],true);
 		}
 	},
 	confirmDownload:function(){
