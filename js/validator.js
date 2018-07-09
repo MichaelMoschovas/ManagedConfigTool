@@ -78,6 +78,7 @@ var VALIDATOR = {
     },
     server: function(v) {
     	var c = true;
+
         if (!CONTROLLER.prebidserver) {
             return true;
         } else if(CONTROLLER.other.length == 0){
@@ -88,6 +89,7 @@ var VALIDATOR = {
         	return false;
         }else {
             for (var i = 0; i < CONTROLLER.other.length; i++) {
+
                 if (CONTROLLER.other[i].hasOwnProperty("s2sConfig")) {
                     for (var j = 0; j < CONTROLLER.other[i]["s2sConfig"].bidders.length; j++) {
                         if (!BIDDERS.hasOwnProperty(CONTROLLER.other[i]["s2sConfig"].bidders[j].toLowerCase())) {
@@ -101,8 +103,8 @@ var VALIDATOR = {
                 	if(v==1) {
                 		VALIDATOR.err.push("Prebid Server was selected but required fields have not been completed");
                 		VALIDATOR.els.push([2,document.getElementsByClassName("s2sConfig"),"custom","other"]);
-                		return false;
                 	}
+                    return false;
                 }
             }
             return true;
