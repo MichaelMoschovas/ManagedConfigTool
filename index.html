@@ -120,6 +120,9 @@
 						<div class="menu_item_select_list" id="select_other">
 							<div class="menu_item_select_title">SELECT OTHER OPTIONS TO INCLUDE</div>
 							<div class="menu_item_select_other" id="other_contain">
+								<div class="menu_item_select_other-custom other_options special_input hidden" id="s2sConfig">
+									<div class="menu_item_select_other-custom-section-title">PREBID SERVER (required for selected adapter)</div>
+								</div>
 								<div class="menu_item_select_other-custom other_options special_input">
 									<div class="menu_item_select_other-custom-section-title expandable"><div class="option_toggle" id="toggle-bidderTimeout" onclick="SETUP.toggleOptions(event)"></div>BIDDER TIMEOUT</div>
 									<div class="menu_item_select_other-custom-section hidden" id="bidderTimeout"></div>
@@ -144,9 +147,7 @@
 									<div class="menu_item_select_other-custom-section-title expandable"><div class="option_toggle" id="toggle-cookieSyncDelay" onclick="SETUP.toggleOptions(event)"></div>COOKIE SYNC DELAY</div>
 									<div class="menu_item_select_other-custom-section hidden" id="cookieSyncDelay"></div>
 								</div>
-								<div class="menu_item_select_other-custom other_options special_input hidden" id="s2sConfig">
-									<div class="menu_item_select_other-custom-section-title">PREBID SERVER</div>
-								</div>
+								
 								<script type="text/javascript" src="js/input.js"></script>
 								<script>SETUP.setupCutomInputs();</script>
 							<div class="menu_item_select_other-scroll" id="other_scroll"><img height="30" width="30" src="images/arrow.png"/></div>

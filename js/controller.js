@@ -194,6 +194,7 @@ var CONTROLLER = {
             if(bool){
                 document.getElementById("s2sConfig").className = document.getElementById("s2sConfig").className.replace(/ hidden/i,"");
                 CONTROLLER.prebidserver = true;
+                SETUP.setCustomToggle("other");
             }else{
                 document.getElementById("s2sConfig").className += " hidden";
                 CONTROLLER.prebidserver = false;
