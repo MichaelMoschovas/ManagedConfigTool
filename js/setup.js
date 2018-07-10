@@ -95,6 +95,118 @@ var SETUP = {
          	}
      	}
  	},
+    toggleDropdown: function(e){
+        /*-----------------------------------------------------------------------*/
+        /*------------ Function called to toggle custom select element ----------*/
+        /*-----------------------------------------------------------------------*/
+        var el = e.childNodes[1];
+        if(el.className.match(/hidden/i)){
+            el.className = el.className.replace(/ hidden/i,"");
+            el.parentNode.className += " focus";
+        }else{
+            el.className += " hidden";
+            el.parentNode.className = el.parentNode.className.replace(/ focus/i,"");
+        }
+    },
+    closeAllDropdowns: function(e){
+        /*-----------------------------------------------------------------------*/
+        /*---------- Function called to close all custom select elements --------*/
+        /*-----------------------------------------------------------------------*/
+        if(!e.target.className.match(/dropinput/)&&!e.target.nodeName.match(/select/i)){
+            Array.from(document.querySelectorAll('.dropdown-menu')).forEach(function(el) {
+                if(!el.className.match(/hidden/)){
+                    el.className += " hidden";
+                    el.parentNode.className = el.parentNode.className.replace(/ focus/i,"");
+                }
+            });
+        }
+    },
+    createDropdownItem: function(key, code, vals, r){
+        /*-----------------------------------------------------------------------*/
+        /*------ Function called to create and return custom select element -----*/
+        /*-----------------------------------------------------------------------*/
+        var s = document.createElement("SELECT"), c = document.createElement("DIV"), d = document.createElement("DIV"), t = document.createElement("DIV"),l = document.createElement("LABEL");
+        c.className = "menu_item_select_other-custom-contain-dropinput";
+        t.className = "dropinput-value";
+        t.innerHTML = "&nbsp;";
+        c.addEventListener("click", function(event){
+            if(event.target.className.match(/dropinput/)){
+                SETUP.toggleDropdown(event.target);
+            }
+        });
+        d.className = "dropdown-menu hidden";
+        s.id = key + "-" + code;
+        s.className = (r) ? key+"_required" : key+"_optional";
+        s.addEventListener("change", function(event){
+            CONTROLLER["logCustom"](event,key);
+        });
+        for(var i = 0; i < vals.length; i++){
+            var o = document.createElement("OPTION"), v = document.createElement("DIV");
+            v.innerHTML = vals[i].toUpperCase();
+            v.setAttribute("data-value", vals[i]);
+            v.className = "options";
+            o.value =  vals[i];
+            o.innerHTML = vals[i].toUpperCase();
+            s.appendChild(o);
+            d.appendChild(v);
+            v.addEventListener("click", function(event){
+                var el = event.target;
+                el.parentNode.previousSibling.innerHTML = (el.getAttribute('data-value')!="" ? el.getAttribute('data-value').toUpperCase() : "&nbsp;");
+                el.parentNode.parentNode.previousSibling.value = el.getAttribute('data-value');
+                el.parentNode.parentNode.previousSibling.dispatchEvent(CONTROLLER.event["change"]);
+                SETUP.closeAllDropdowns(event);
+            });
+        }
+        c.appendChild(t);
+        c.appendChild(d);
+        l.className = "menu_item_select_other-select";
+        l.appendChild(s);
+        l.appendChild(c);
+
+        return l;
+    },
+    createCheckboxItem: function(key,code,r){
+        /*-----------------------------------------------------------------------*/
+        /*-------- Function called to create and return checkbox element --------*/
+        /*-----------------------------------------------------------------------*/
+        var i = document.createElement("INPUT"), v = document.createElement("SPAN"),s = document.createElement("SPAN"),l = document.createElement("LABEL");
+        i.id = key + "-" + code;
+        i.type = "checkbox";
+        i.className = (r) ? key+"_required" : key+"_optional";
+        v.className = "switch_value other";
+        s.className = "switch_slider other";
+        i.addEventListener("change", function(event){
+            CONTROLLER["logCustom"](event,key);
+        });
+        l.className = "menu_item_select_other-switch";
+        l.appendChild(i);
+        l.appendChild(v);
+        l.appendChild(s);
+
+        return l;
+    },
+    createInputItem: function(key,code,type,r){
+        /*-----------------------------------------------------------------------*/
+        /*---------- Function called to create and return input element ---------*/
+        /*-----------------------------------------------------------------------*/
+        var i = document.createElement("INPUT"), v = document.createElement("SPAN"),s = document.createElement("SPAN"),l = document.createElement("LABEL");
+        i.id = key + "-" + code;
+        i.type = (type==1) ? "number":"text";
+        (type == 3) ? i.className = "array " + key+"_required" : i.className = key+"_required";
+        i.className = (r) ? ((type == 3) ? "array " + key+"_required" : ((type == 4) ? "object " + key+"_required" : key+"_required")) : ((type == 3) ? "array " + key+"_optional" : ((type == 4) ? "object " + key+"_optional" : key+"_optional"));
+        if(type == 1){
+            i.addEventListener("keypress", function(event) {
+                if(event.charCode < 48 || event.charCode > 57) event.preventDefault();
+            });
+        }
+        i.addEventListener("keyup", function(event){
+            CONTROLLER["logCustom"](event,key);
+        });
+        l.className = "menu_item_select_other-input";
+        l.appendChild(i);
+
+        return l;
+    },
     setupCutomInputs: function(){
         /*-----------------------------------------------------------------------*/
         /*------------- Function called to setup custom input fields ------------*/
@@ -102,73 +214,40 @@ var SETUP = {
         for (const key in INPUTS) {
             var el = document.getElementById(key),c = 0;
             for(const attr in INPUTS[key]){
-                var container = document.createElement("DIV"), title = document.createElement("SPAN"), label = document.createElement("LABEL"), input = document.createElement("INPUT"), select = document.createElement("SELECT");
+                var container = document.createElement("DIV"), title = document.createElement("SPAN"), label;
                 container.className = "menu_item_select_other-custom-contain-input "+key;
                 title.className = "menu_item_select_other-custom-title";
                 title.innerHTML = INPUTS[key][attr].name; 
-                input.id = key + "-" + INPUTS[key][attr].code;
-                input.type = (INPUTS[key][attr].type == 2) ? "checkbox" : ((INPUTS[key][attr].type == 1) ? "number" : "text");
                 if(INPUTS[key][attr].type == 5){
-                    select.id = key + "-" + INPUTS[key][attr].code;
-                    select.addEventListener("change", function(event){
-                        CONTROLLER["logCustom"](event,key);
-                    });
-                    for(var i = 0; i < INPUTS[key][attr].vals.length; i++){
-                        var o = document.createElement("OPTION");
-                        o.value =  INPUTS[key][attr].vals[i];
-                        o.innerHTML = INPUTS[key][attr].vals[i].toUpperCase();
-                        select.appendChild(o);
-                    }
-                    label.className = "menu_item_select_other-select";
-                    label.appendChild(select);
+                    label = SETUP.createDropdownItem(key,INPUTS[key][attr].code,INPUTS[key][attr].vals,INPUTS[key][attr].required);
                 }
-                if(input.type == "checkbox"){
-                    label.className = "menu_item_select_other-switch";
-                    var v = document.createElement("SPAN"),s = document.createElement("SPAN");
-                    v.className = "switch_value other";
-                    s.className = "switch_slider other";
-                    input.addEventListener("change", function(event){
-                        CONTROLLER["logCustom"](event,key);
-                    });
-                    label.appendChild(input);
-                    label.appendChild(v);
-                    label.appendChild(s);
-                }else if(INPUTS[key][attr].type != 5){
-                    label.className = "menu_item_select_other-input";
-                    if(input.type == "number"){
-                        input.addEventListener("keypress", function(event) {
-                            if(event.charCode < 48 || event.charCode > 57) event.preventDefault();
-                        });
-                    }
-                    input.addEventListener("keyup", function(event){
-                        CONTROLLER["logCustom"](event,key);
-                    });
-                    label.appendChild(input);
+                else if(INPUTS[key][attr].type == 2){
+                    label = SETUP.createCheckboxItem(key,INPUTS[key][attr].code,INPUTS[key][attr].required);
+                }else{
+                    label = SETUP.createInputItem(key,INPUTS[key][attr].code,INPUTS[key][attr].type, INPUTS[key][attr].required);
                 }
 
                 container.appendChild(title);
                 container.appendChild(label);
 
-                
                 if(INPUTS[key][attr].required){
-                    (INPUTS[key][attr].type == 5) ? select.className = key+"_required" : ((INPUTS[key][attr].type == 3) ? input.className = "array " + key+"_required" : input.className = key+"_required");
-                    el.append(container);
+                    el.appendChild(container);
                 }else{
-                    (INPUTS[key][attr].type == 5) ? select.className = key+"_optional" : ((INPUTS[key][attr].type == 3) ? input.className = "array " + key+"_optional" : ((INPUTS[key][attr].type == 4) ? input.className = "object " + key+"_optional" : input.className = key+"_optional"));
                     if(c == 0){
                         var o = document.createElement("DIV"), ot = document.createElement("DIV");
                         o.className = "menu_item_select_other-custom-optional";
                         o.id = key + "-optional";
                         ot.className = "menu_item_select_other-custom-section-title";
                         ot.innerHTML = "OPTIONAL";
-                        o.append(ot);
-                        el.append(o);
+                        o.appendChild(ot);
+                        el.appendChild(o);
                         c++;
                     }
-                    document.getElementById(key + "-optional").append(container);
+                    document.getElementById(key + "-optional").appendChild(container);
                 }
             }
         }
+        document.addEventListener("click",SETUP.closeAllDropdowns);
     },
  	resetCachedInputs: function(){
  		/*-----------------------------------------------------------------------*/

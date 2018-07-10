@@ -230,12 +230,15 @@ $('#fileinput').on('dragover',
     function(e){
     	e.preventDefault();
         e.stopPropagation();
+        var regex = /(openxmlformats|text\/csv|\.xls$|\.csv$|\.xlsx$)/gi;
         if(e.originalEvent.dataTransfer){
-            if(e.originalEvent.dataTransfer.files.length) {
+            if(e.originalEvent.dataTransfer.files.length>0&&(e.originalEvent.dataTransfer.files[0].type.match(regex)||e.originalEvent.dataTransfer.files[0].name.match(regex))) {
                 e.preventDefault();
                 e.stopPropagation();
                	CONTROLLER.file = e.originalEvent.dataTransfer.files;
                	CONTROLLER.readFile(e.originalEvent.dataTransfer.files);
+            }else{
+				MESSAGE.printMessage(1,null);
             }   
         }
         $(this).parent().removeClass("drag");

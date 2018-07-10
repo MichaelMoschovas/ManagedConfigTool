@@ -294,7 +294,6 @@ var CONTROLLER = {
                         }
                     }
                     else{
-                    
                         val = el.value.replace(/\s/g,"");
                     }
                     o.hasOwnProperty(v) ? o[v][el.id.replace(v+"-","")] = val : o[v] = {[el.id.replace(v+"-","")]:val};
@@ -379,6 +378,9 @@ var CONTROLLER = {
    		}
    	},
     setFocus: function(e,bool,c){
+        /*-----------------------------------------------------------------------*/
+        /*------ Function called to toggle forms and set focus to elements ------*/
+        /*-----------------------------------------------------------------------*/
         var f = document.getElementById("toogle_file"), c = document.getElementById("toogle_custom");
         for(var i = 0; i < e.length; i++){
             if(e[i][0]==0){
@@ -414,6 +416,9 @@ var CONTROLLER = {
         }
     },
     removeRequireDisplay: function(){
+        /*-----------------------------------------------------------------------*/
+        /*--------------- Function called to remove required class --------------*/
+        /*-----------------------------------------------------------------------*/
         Array.from(document.querySelectorAll('.display_required')).forEach(function(el) {
             el.className = el.className.replace(/ display_required/i,"");
         });
