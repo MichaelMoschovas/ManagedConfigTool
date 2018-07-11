@@ -201,6 +201,19 @@ var CONTROLLER = {
             }
         }
     },
+    currencyInput: function(e,bool){
+        if(e.id.match(/currency/gi)){
+            var el = document.getElementById("currency");
+            if(bool){
+                document.getElementById("currency").className = document.getElementById("currency").className.replace(/ hidden/i,"");
+                CONTROLLER.currency = true;
+                SETUP.setCustomToggle("other");
+            }else{
+                document.getElementById("currency").className += " hidden";
+                CONTROLLER.currency = false;
+            }
+        }
+    },
     logAnalytics: function(el,t){
     	/*-----------------------------------------------------------------------*/
     	/*-- Function called on input change to log whether or not a analytics --*/
@@ -233,6 +246,7 @@ var CONTROLLER = {
     		}
     		CONTROLLER.removeBidsPreview(el.id.replace(/modules_/i,""),"modules");
     	}
+        CONTROLLER.currencyInput(el,el.checked);
     	CONTROLLER.formCheck();
     },
     logPrecision: function(t){

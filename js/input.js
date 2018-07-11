@@ -67,6 +67,38 @@ var INPUTS = {
 			type : 0
 		}
 	},
+	"currency" : {
+		adserver: {
+			name : "Ad Server Currency",
+			required : false,
+			code : "adServerCurrency",
+			type : 0
+		},
+		granularity: {
+			name : "Multiplier",
+			required : false,
+			code : "granularityMultiplier",
+			type : 1
+		},
+		conversionfile: {
+			name : "Conversion Rate File",
+			required : false,
+			code : "conversionRateFile",
+			type : 0
+		},
+		rate: {
+			name : "Rates",
+			required : false,
+			code : "rates",
+			type : 4
+		},
+		adserver: {
+			name : "Ad Server Currency",
+			required : false,
+			code : "bidderCurrencyDefault",
+			type : 4
+		}
+	},
 	"userSync" : {
 		syncenable : {
 			name : "Enable Sync",

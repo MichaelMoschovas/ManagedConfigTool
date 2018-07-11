@@ -55,15 +55,20 @@ var BUILD = {
         if(o.match(/,/gi)) {
         	var a = splitAttributes(o);
         	for(var i = 0; i < a.length; i++){
-        		var t = splitValues(a[i]);
-        		if(t[1].match(/^\{.+:.+\}/gi)){
-        			obj[t[0]] = BUILD.buildObject(t[1]);
-        		}else if(t[1].match(/,/gi)){
-        			t[1] = t[1].replace(/_,/gi,",");
-        			obj[t[0]] = BUILD.buildArray(t[1]);
-        		}else{
-	        		obj[t[0]] = t[1].replace(/['"]/g,"");
-	        	}
+                try{
+            		var t = splitValues(a[i]);
+            		if(t[1].match(/^\{.+:.+\}/gi)){
+            			obj[t[0]] = BUILD.buildObject(t[1]);
+            		}else if(t[1].match(/,/gi)){
+            			t[1] = t[1].replace(/_,/gi,",");
+            			obj[t[0]] = BUILD.buildArray(t[1]);
+            		}else{
+    	        		obj[t[0]] = t[1].replace(/['"]/g,"");
+    	        	}
+                }catch(err){
+                    MESSAGE.printMessage(9,null);
+                    return "";
+                }
         	}
         }else{
         	var s = splitValues(o);
@@ -260,7 +265,7 @@ var BUILD = {
         for (var j = 0; j < b.parameters.length; j++) {
             var m = 0;
             for (var key in obj.params) {
-                if (key == b.parameters[j]) m++;
+                if (key == b.parameters[j]&&obj.params[key]!="") m++;
             }
             if (m == 0 && f.length == 0) {
                 f = [p, obj.bidder, [b.parameters[j]]];

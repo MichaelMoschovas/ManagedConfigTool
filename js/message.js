@@ -1,5 +1,5 @@
 var MESSAGE = {
-	title : ["ERROR","ERROR","ERROR","ERROR","ERROR","NOTICE","WARNING","WARNING","NOTICE"],
+	title : ["ERROR","ERROR","ERROR","ERROR","ERROR","NOTICE","WARNING","WARNING","NOTICE","ERROR"],
 	display : [
 		"File Invalid. Please review file for errors.",
 		"Filetype Invalid. Please upload a .csv, .xls, or .xlsx file.",
@@ -10,6 +10,7 @@ var MESSAGE = {
 		"Slot pattern(s) {PATTERN} has not been added due to missing bidder information. Bidder {ADAPTER} is missing one or more required parameters. Please check the spreadsheet and fill in the following parameter(s): {PARAMETERS}",
 		"Slot pattern(s) {PATTERN} has not been added due to no corresponding bidder information. Please check the spreadsheet and fill in parameter(s) for at least one bidder.",
 		"Bidder Information could not be found for {ADAPTER}. Please check spreadsheet for errors. If no errors exist, either update bidder.js to include new bidder mapping or download file as is, and manually input bidder values.",
+		"Improper object definition found. Please revise this spreasheet and reupload the file."
 	],
 	id : [
 		"file-invalid-{ERRORCODE}",
@@ -21,6 +22,7 @@ var MESSAGE = {
 		"missing-params-{PATTERN}-{ADAPTER}-{ERRORCODE}",
 		"no-bidder-{PATTERN}-{ERRORCODE}",
 		"bidder-unknown-{ADAPTER}-{ERRORCODE}",
+		"object-invalid-{ERRORCODE}"
 	],
 	replaceMessageMacros: function(str,v,err){
 		/*-----------------------------------------------------------------------*/
