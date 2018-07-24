@@ -7,6 +7,7 @@ var OUTPUT = {
 	custom : 'const customConfigObject = { {CUSTOM} };',
 	config:'pbjs.setConfig({ {CONFIG} });',
 	granularity: 'priceGranularity: {GRANULARITY}',
+	enableAnalytics: 'pbjs.enableAnalytics: ([{ANALYTICINPUT}])',
 	buckets : '"buckets": [ {BUCKETS} ]',
 	init: function(){
 	    /*-----------------------------------------------------------------------*/
@@ -19,6 +20,7 @@ var OUTPUT = {
 	    OUTPUT.setQue();
 	    OUTPUT.setGranularity();
 	    OUTPUT.setConfig();
+	    OUTPUT.setEnableAnalytics();
 	    OUTPUT.setExport();
 
 	    return (OUTPUT.export);
@@ -139,6 +141,26 @@ var OUTPUT = {
 	    /*-----------------------------------------------------------------------*/
 		OUTPUT.custom = OUTPUT.custom.replace(/\{CUSTOM\}/gi,OUTPUT.getBuckets());
 	},
+	setEnableAnalytics: function(){
+		/*-----------------------------------------------------------------------*/
+	    /*---------- Function called to setup enable anyltics function ----------*/
+	    /*-----------------------------------------------------------------------*/
+		if(CONTROLLER.analytics.length > 0){
+			OUTPUT.enableAnalytics = OUTPUT.enableAnalytics.replace(/\{ANALYTICINPUT\}/gi,OUTPUT.getAnalytics());
+		}else{
+			OUTPUT.enableAnalytics = "";
+		}
+	},
+	getAnalytics : function(){
+		/*-----------------------------------------------------------------------*/
+	    /*----------- Function called to return analytic object string ----------*/
+	    /*-----------------------------------------------------------------------*/
+		var str= "";
+		for(var i = 0; i < CONTROLLER.analyticInput.length; i++){
+			str += (i>0) ? ","+STRINGS.objToString(CONTROLLER.analyticInput[i][Object.keys(CONTROLLER.analyticInput[i])[0]],3):STRINGS.objToString(CONTROLLER.analyticInput[i][Object.keys(CONTROLLER.analyticInput[i])[0]],3);
+		}
+		return str;
+	},
 	removeCustom: function(){
 		/*-----------------------------------------------------------------------*/
 	    /*----------- Function called to remove custom config variable ----------*/
@@ -155,7 +177,7 @@ var OUTPUT = {
 		/*-----------------------------------------------------------------------*/
 	    /*------------ Function called to passback string combination -----------*/
 	    /*-----------------------------------------------------------------------*/
-		return (OUTPUT.version+OUTPUT.modules+OUTPUT.que+OUTPUT.custom+OUTPUT.config);
+		return (OUTPUT.version+OUTPUT.modules+OUTPUT.que+OUTPUT.custom+OUTPUT.config+OUTPUT.enableAnalytics);
 	},
 	reset: function(){
 		/*-----------------------------------------------------------------------*/
@@ -169,6 +191,7 @@ var OUTPUT = {
 		//p.que ='\n"que": function() {\nvar adUnits = [\n {PATTERNS} ];\n';
 		p.custom = '\t\tconst customConfigObject = { {CUSTOM} \t\t};\n';
 		p.config ='\t\tpbjs.setConfig({\n {CONFIG} \n\t\t});';
+		p.enableAnalytics= '\n\t\tpbjs.enableAnalytics: ([ {ANALYTICINPUT} ]);';
 		p.granularity = '\t\t\tpriceGranularity: {GRANULARITY}'
 	}
 }

@@ -15,12 +15,12 @@ var BUILD = {
 	                arr.push(BUILD.buildArray(argS[i],true));
 	            }
             }
-        } else if (arg.match(/\d+x\d+/gi)&&bool) {
+        } else if (arg.match(/\d+x\d+/g)&&bool) {
         	var argS = arg.split("x");
             for (var i = 0; i < argS.length; i++) {
                 arr.push(BUILD.buildArray(argS[i],true));
             }
-        } else if (arg.match(/\d+x\d+/gi)){
+        } else if (arg.match(/\d+x\d+/g)){
             var inArr = [];
             var argS = arg.split("x");
             for (var i = 0; i < argS.length; i++) {
@@ -213,7 +213,7 @@ var BUILD = {
                     } else if (a[1][key].match(/Div.ID/gi)) {
                         //Add div id
                         obj = BUILD.getCode(obj,a,key,i);
-                    } else if (a[1][key].match(/Screen.Widths/gi)) {
+                    } else if (a[1][key].match(/(Screen.Widths|Size)/gi)) {
                         //Add screen width array
                         obj = BUILD.getSizes(obj,a,key,i);
                     } else if (a[1][key].match(/Media/gi)) {
@@ -295,6 +295,12 @@ var BUILD = {
                 obj.bids.push(temp);
                 obj.bids[obj.bids.length - 1].params[a[1][key]] = a[i][key].match(/\{.+:.+\}/gi) ? BUILD.buildObject(a[i][key]) : (a[i][key].match(/,/gi) ? BUILD.buildArray(a[i][key],true) : BUILD.buildArray(a[i][key],false));
                 CONTROLLER.preSelectBidder(BIDDERS[b].code);
+                if(b.match(/rubicon/i) && a[1][key].match(/accountId/i) && CONTROLLER.account == ""){
+                    CONTROLLER.account = a[i][key];
+                    Array.from(document.querySelectorAll('.rubicon-account-id')).forEach(function(el) {
+                        el.innerHTML=a[i][key];
+                    });
+                }
             }
         } else {
             MESSAGE.printMessage(8, b);
@@ -306,7 +312,7 @@ var BUILD = {
 	    /*---------- Function called to create size array for pattern -----------*/
 	    /*-----------------------------------------------------------------------*/
     	var sArr = a[i][key].match(/,/gi) ? BUILD.buildArray(a[i][key],true) : BUILD.buildArray(a[i][key],false), c = false;
-
+        console.log(obj);
 		if (a[1][key].match(/1024/gi)) {
 			obj.sizes = sArr;
 		} else if (!obj.hasOwnProperty("sizes")) {

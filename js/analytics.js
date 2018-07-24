@@ -8,7 +8,7 @@ var ANALYTICS = {
   adomik: {
     name: 'Adomik Analytics',
     display: 'Adomik Analytics',
-    code: 'googleAnalyticsAdapter',
+    code: 'adomikAnalyticsAdapter',
     state: 'all'
   },
   adxcg: {

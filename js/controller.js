@@ -12,9 +12,11 @@ var CONTROLLER = {
 	passQA : false,
     valid: false,
 	event : {},
+    account : "",
 	url:{link:"",name:""},
     prebidserver: false,
     currency: false,
+    analyticInput : [],
     begin: function(d,t) {
     	/*-----------------------------------------------------------------------*/
     	/*------------ Function called to begin file parsing process ------------*/
@@ -28,8 +30,8 @@ var CONTROLLER = {
 	    	SETUP.setFormToggle("custom");
 	    	CONTROLLER.displayFileName();
 	    }else{
-            MESSAGE.printMessage(4,null);
             CONTROLLER.resetValues();
+            MESSAGE.printMessage(4,null);
 	    }
         CONTROLLER.setLoader();
     },
@@ -37,7 +39,8 @@ var CONTROLLER = {
     	/*-----------------------------------------------------------------------*/
     	/*-------- Function called to reset all object values to default --------*/
     	/*-----------------------------------------------------------------------*/
-    	CONTROLLER.filetype =  "";
+    	CONTROLLER.file =  "";
+        CONTROLLER.filetype =  "";
 		CONTROLLER.columns = 0;
 		CONTROLLER.patterns = [];
 		CONTROLLER.passQA = false;
@@ -46,8 +49,11 @@ var CONTROLLER = {
 		CONTROLLER.modules = [];
 		CONTROLLER.analytics = [];
 		CONTROLLER.precision = [];
-		CONTROLLER.precisionConfig = [];
+        CONTROLLER.other = [];
+		CONTROLLER.passQA = false;
 		CONTROLLER.valid = false;
+        CONTROLLER.prebidserver= false;
+        CONTROLLER.currency= false;
 		MESSAGE.reset();
     },
     readFile: function(e){
@@ -216,20 +222,65 @@ var CONTROLLER = {
     },
     logAnalytics: function(el,t){
     	/*-----------------------------------------------------------------------*/
-    	/*-- Function called on input change to log whether or not a analytics --*/
+    	/*-------- Function called on input change to log if an analytics -------*/
     	/*--------- value should be added or removed from the bids array --------*/
     	/*-----------------------------------------------------------------------*/
-    	if(el.checked){
+    	var input = document.getElementById(el.id.replace(/analytics_/i,"").replace(/analyticsadapter/i,""));
+        if(el.checked){
     		CONTROLLER.analytics.push(t);
     		CONTROLLER.displayBidsPreview(el,"analytics");
+            input.className = input.className.replace(/ hidden/i,"");
+            var obj = {}, k = t.replace(/analyticsadapter/i,"");
+            obj[k] = {};
+            obj[k]["options"] = {};
+            for(var input in ANALYTICINPUTS[k]){
+                if(ANALYTICINPUTS[k][input].required){ 
+                    if(input.match(/provider/i)){
+                        obj[k][input] = ANALYTICINPUTS[k].title;
+                    }else{
+                        obj[k]["options"][input] = "";
+                    }
+                }
+            }
+            CONTROLLER.analyticInput.push(obj);
+            SETUP.setCustomToggle("other");
     	}
     	else{
     		for(var i = 0; i < CONTROLLER.analytics.length; i++){
     			if(CONTROLLER.analytics[i] == t) CONTROLLER.analytics.splice(i,1);
+                if(CONTROLLER.analyticInput[i].hasOwnProperty(t.replace(/analyticsadapter/i,""))) CONTROLLER.analyticInput.splice(i,1);
     		}
     		CONTROLLER.removeBidsPreview(el.id.replace(/analytics_/i,""),"analytics");
+            input.className += " hidden";
     	}
     	CONTROLLER.formCheck();
+    },
+    logAnalyticElement: function(e,k){
+        /*-----------------------------------------------------------------------*/
+        /*-------- Function called each time analytics adapter is selected ------*/
+        /*------- and created a secondary related object in order to track ------*/
+        /*---------------- input values for apater to be enabled ----------------*/
+        /*-----------------------------------------------------------------------*/
+        var id = e.target.id.replace(k+"-",""),f=false;
+        for(var i = 0; i < CONTROLLER.analyticInput.length; i++){
+            if(Object.keys(CONTROLLER.analyticInput[i])[0] == k&&CONTROLLER.analyticInput[i][Object.keys(CONTROLLER.analyticInput[i])[0]]["options"].hasOwnProperty(id)){
+                for(var input in CONTROLLER.analyticInput[i][Object.keys(CONTROLLER.analyticInput[i])[0]]["options"]){
+                    if(ANALYTICINPUTS[k][input].required&&input==id){
+                        CONTROLLER.analyticInput[i][Object.keys(CONTROLLER.analyticInput[i])[0]]["options"][input] = event.target.value;
+                    }else if(!ANALYTICINPUTS[k][input].required&&input==id){
+                        if(event.target.value&&event.target.value!=""){
+                            CONTROLLER.analyticInput[i][Object.keys(CONTROLLER.analyticInput[i])[0]]["options"][input] = event.target.value;
+                        }else{
+                            delete CONTROLLER.analyticInput[i][Object.keys(CONTROLLER.analyticInput[i])[0]]["options"][input];
+                        }
+                    }
+                }
+            }else if(Object.keys(CONTROLLER.analyticInput[i])[0] == k&&event.target.value&&event.target.value!=""){
+                 CONTROLLER.analyticInput[i][Object.keys(CONTROLLER.analyticInput[i])[0]]["options"][id] = event.target.value;
+            }
+        }
+        console.log(CONTROLLER.analyticInput);
+        CONTROLLER.formCheck();
     },
     logModules: function(el,t){
     	/*-----------------------------------------------------------------------*/
@@ -632,10 +683,10 @@ var CONTROLLER = {
     	//Loop through array and match header values
     	//Must equal at least 5 matches to pass
     	for(var i = 0; i < a[1].length; i++){
-    		var regex = /(Sizes.for.Screen.Widths.*\d+px.+)|(DFP.Ad.Unit.Name)|(Div.ID)/gi;
+    		var regex = /(Sizes)|(DFP.Ad.Unit.Name)|(Div.ID)/gi;
     		if(a[1][i].match(regex)) c++;
     	}
-    	return (c >= 5) ?  true : false;
+    	return (c >= 3) ?  true : false;
     },
     constructJS : function(){
     	return (OUTPUT.init());

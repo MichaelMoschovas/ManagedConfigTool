@@ -77,10 +77,10 @@
 							<div class="menu_item_select_title">SELECT ANALYTIC ADAPTERS TO INLUDE</div>
 							<div class="menu_item_select-preview" id="analytics_preview"></div>
 							<div class="menu_item_select_analytics" id="analytics_contain">
-								<script type="text/javascript" src="js/analytics.js"></script>
+								<!--<script type="text/javascript" src="js/analytics.js"></script>
 			            		<script>
 			            			 SETUP.setupAnalytics();
-			            		</script>
+			            		</script>-->
 							</div>
 							<div class="menu_item_select_analytics-scroll" id="analytics_scroll"><img height="30" width="30" src="images/arrow.png"/></div>
 						</div>
@@ -120,6 +120,10 @@
 						<div class="menu_item_select_list" id="select_other">
 							<div class="menu_item_select_title">SELECT OTHER OPTIONS TO INCLUDE</div>
 							<div class="menu_item_select_other" id="other_contain">
+								<script type="text/javascript" src="js/analytics.js"></script>
+			            		<script>
+			            			 SETUP.setupAnalytics();
+			            		</script>
 								<div class="menu_item_select_other-custom other_options special_input hidden" id="s2sConfig">
 									<div class="menu_item_select_other-custom-section-title">PREBID SERVER (required for selected adapter)</div>
 								</div>
@@ -152,12 +156,18 @@
 								</div>
 								
 								<script type="text/javascript" src="js/input.js"></script>
-								<script>SETUP.setupCutomInputs();</script>
+								<script type="text/javascript" src="js/analyticinput.js"></script>
+								<script>SETUP.setupCutomInputs();SETUP.setupAnalyticInputs();</script>
 							<div class="menu_item_select_other-scroll" id="other_scroll"><img height="30" width="30" src="images/arrow.png"/></div>
 						</div>
 					</div>
 				</div>
 			</div>
+		</div>
+	</div>
+	<div class="main_container hidden">
+		<div>
+			THE BROWSER OR BROWSER VERSION YOU ARE USING IS NOT SUPPORTED. PLEASE TRY AGAIN IN ANOTHER BROWSER OR UPDATE TO THE LATEST VERSION. SORRY FOR THE INCONVIENCE!
 		</div>
 	</div>
 </main>

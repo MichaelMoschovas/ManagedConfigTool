@@ -2,16 +2,17 @@ var VALIDATOR = {
 	err : [],
 	els : [],
     init: function() {
-        if (VALIDATOR.file() && VALIDATOR.bids() && VALIDATOR.matchBids() && VALIDATOR.precision() && VALIDATOR.server(0)) {
+        if (VALIDATOR.file() && VALIDATOR.bids() && VALIDATOR.matchBids() && VALIDATOR.precision() && VALIDATOR.server(0) && VALIDATOR.analytic(0)) {
         	VALIDATOR.reset();
             return "VALIDATED";
         } else {
         	VALIDATOR.reset();
-            if (!VALIDATOR.file()) {VALIDATOR.err.push("File has not been uploaded");VALIDATOR.els.push([0,document.getElementById("toogle_file"),"file"]);}
-            if (!VALIDATOR.bids()) {VALIDATOR.err.push("No BID Adapters have been included");VALIDATOR.els.push([1,document.getElementById("sidebar_bid"),"custom","bid"]);}
+            if (!VALIDATOR.file()) {VALIDATOR.err.push("File has not been uploaded ");VALIDATOR.els.push([0,document.getElementById("toogle_file"),"file"]);}
+            if (!VALIDATOR.bids()) {VALIDATOR.err.push("No BID Adapters have been included ");VALIDATOR.els.push([1,document.getElementById("sidebar_bid"),"custom","bid"]);}
             if (!VALIDATOR.matchBids()) {VALIDATOR.els.push([1,document.getElementById("sidebar_bid"),"custom","bid"]);}
-            if (!VALIDATOR.precision()) {VALIDATOR.err.push("Granularity values MUST be inputted into bucket fields. *NOTE: Increment and Maximum values MUST be greater than 0, and Maximum value MUST be greater than Minimum");VALIDATOR.els.push([1,document.getElementById("sidebar_precision"),"custom","precision"]);}
+            if (!VALIDATOR.precision()) {VALIDATOR.err.push("Granularity values MUST be inputted into bucket fields. *NOTE: Increment and Maximum values MUST be greater than 0, and Maximum value MUST be greater than Minimum ");VALIDATOR.els.push([1,document.getElementById("sidebar_precision"),"custom","precision"]);}
             if (!VALIDATOR.server(0)) VALIDATOR.server(1);
+            if (!VALIDATOR.analytic(0)) VALIDATOR.analytic(1);
             return ([VALIDATOR.err,VALIDATOR.els]);
         }
     },
@@ -39,7 +40,7 @@ var VALIDATOR = {
         		if(a == CONTROLLER.bids[j]) c = true;
         	}
         	if(!c) {
-        		VALIDATOR.err.push("Adapter missing for the following bidder defined in the spreadsheet: " + CONTROLLER.bidders[i] + ". Please include the "+a.replace(/BidAdapter/i,"").toUpperCase()+" Bid Adapter.");
+        		VALIDATOR.err.push("Adapter missing for the following bidder defined in the spreadsheet: " + CONTROLLER.bidders[i] + ". Please include the "+a.replace(/BidAdapter/i,"").toUpperCase()+" Bid Adapter. ");
         		r = false;
         	}
         }
@@ -83,7 +84,7 @@ var VALIDATOR = {
             return true;
         } else if(CONTROLLER.other.length == 0){
         	if(v==1) {
-        		VALIDATOR.err.push("Prebid Server was selected but required fields have not been completed");
+        		VALIDATOR.err.push("Prebid Server was selected but required fields have not been completed. ");
         		VALIDATOR.els.push([2,document.getElementsByClassName("s2sConfig"),"custom","other"]);
         	}
         	return false;
@@ -93,7 +94,7 @@ var VALIDATOR = {
                 if (CONTROLLER.other[i].hasOwnProperty("s2sConfig")) {
                     for (var j = 0; j < CONTROLLER.other[i]["s2sConfig"].bidders.length; j++) {
                         if (!BIDDERS.hasOwnProperty(CONTROLLER.other[i]["s2sConfig"].bidders[j].toLowerCase())) {
-                        	if(v==1) VALIDATOR.err.push("Prebid Server defined Bidder " + CONTROLLER.other[i]["s2sConfig"].bidders[j] + " does not exist in spreadsheet. Please check the input field for errors.");
+                        	if(v==1) VALIDATOR.err.push("Prebid Server defined Bidder " + CONTROLLER.other[i]["s2sConfig"].bidders[j] + " does not exist in spreadsheet. Please check the input field for errors. ");
                         	c = false;
                         	VALIDATOR.els.push([1,document.getElementById("s2sConfig-bidders"),"custom","other"]);
                         }
@@ -101,12 +102,34 @@ var VALIDATOR = {
                     if(!c) return false;
                 }else{
                 	if(v==1) {
-                		VALIDATOR.err.push("Prebid Server was selected but required fields have not been completed");
+                		VALIDATOR.err.push("Prebid Server was selected but required fields have not been completed. ");
                 		VALIDATOR.els.push([2,document.getElementsByClassName("s2sConfig"),"custom","other"]);
                 	}
                     return false;
                 }
             }
+            return true;
+        }
+    },
+    analytic: function(v) {
+        var c = true;
+
+        if (CONTROLLER.analytics.length == 0) {
+            return true;
+        }else {
+            for (var i = 0; i < CONTROLLER.analyticInput.length; i++) {
+               for(var input in CONTROLLER.analyticInput[i][Object.keys(CONTROLLER.analyticInput[i])[0]]["options"]){
+                    if(CONTROLLER.analyticInput[i][Object.keys(CONTROLLER.analyticInput[i])[0]]["options"][input]==""){
+                        c=false;
+                        if(v==1){
+                            VALIDATOR.err.push("Analytic Adapter "+ Object.keys(CONTROLLER.analyticInput[i])[0].toUpperCase() +" was selected but required fields have not been completed. ");
+                            VALIDATOR.els.push([2,document.getElementsByClassName(Object.keys(CONTROLLER.analyticInput[i])[0]),"custom","other"]);
+                        }
+                    }
+               }
+            }
+
+            if(!c) return false;
             return true;
         }
     }

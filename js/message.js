@@ -60,12 +60,13 @@ var MESSAGE = {
     	/*-----------------------------------------------------------------------*/
     	var p = document.createElement("P"), title = document.createElement("SPAN"), contain = document.getElementById("errorlog");
     	if(!document.getElementById(MESSAGE.replaceMessageMacros(MESSAGE.id[err],v,err))){
+    		
 	    	p.id = MESSAGE.replaceMessageMacros(MESSAGE.id[err],v,err);
 	    	title.innerHTML= MESSAGE.title[err].toUpperCase()+":";
 	    	p.appendChild(title);
 	    	contain.appendChild(p);
 	    	p.appendChild(document.createTextNode(MESSAGE.replaceMessageMacros(MESSAGE.display[err],v,err)));
-	    	contain.parentNode.style.display="block";
+	    	contain.parentNode.style.display="block";console.log(err);
 	    }
     	return false;
     },

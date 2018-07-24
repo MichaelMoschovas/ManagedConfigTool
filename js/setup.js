@@ -70,9 +70,19 @@ var SETUP = {
 	            label.appendChild(input);
 	            label.appendChild(span);
 	            document.getElementById("analytics_contain").appendChild(label);
+                SETUP.createAnalyticsCustomInput(key, ANALYTICS[key].code, ANALYTICS[key].display);
          	}
      	}
  	},
+    createAnalyticsCustomInput: function(k,c,d){
+        var a = document.getElementById("other_contain"), div = document.createElement("DIV"), title = document.createElement("DIV");
+        div.className = "menu_item_select_other-custom other_options special_input hidden";
+        div.id= k;
+        title.innerHTML = d.toUpperCase() + " (required for selected analytics adapter)";
+        title.className = "menu_item_select_other-custom-section-title";
+        div.appendChild(title);
+        a.appendChild(div);
+    },
  	setupModules: function() {
  		/*-----------------------------------------------------------------------*/
     	/*-------------- Function called to setup modules checkboxes ------------*/
@@ -192,7 +202,6 @@ var SETUP = {
         var i = document.createElement("INPUT"), v = document.createElement("SPAN"),s = document.createElement("SPAN"),l = document.createElement("LABEL");
         i.id = key + "-" + code;
         i.type = (type==1) ? "number":"text";
-        (type == 3) ? i.className = "array " + key+"_required" : i.className = key+"_required";
         i.className = (r) ? ((type == 3) ? "array " + key+"_required" : ((type == 4) ? "object " + key+"_required" : key+"_required")) : ((type == 3) ? "array " + key+"_optional" : ((type == 4) ? "object " + key+"_optional" : key+"_optional"));
         if(type == 1){
             i.addEventListener("keypress", function(event) {
@@ -202,6 +211,35 @@ var SETUP = {
         i.addEventListener("keyup", function(event){
             CONTROLLER["logCustom"](event,key);
         });
+        l.className = "menu_item_select_other-input";
+        l.appendChild(i);
+
+        return l;
+    },
+    createAnalyticInput: function(key,code,type,r){
+        /*-----------------------------------------------------------------------*/
+        /*---------- Function called to create and return input element ---------*/
+        /*-----------------------------------------------------------------------*/
+        var i = (type == 2) ? document.createElement("SPAN") : document.createElement("INPUT"), v = document.createElement("SPAN"), s = document.createElement("SPAN"),l = document.createElement("LABEL");
+        i.id = key + "-" + code;
+
+        if(code.match(/provide/i)){ 
+            i.setAttribute("readonly",true);
+            i.value = ANALYTICINPUTS[key].title;
+        }
+        
+           i.type = (type==1) ? "number":"text";
+           i.className = (r) ? ((type == 3) ? "array " + key+"_required" : ((type == 4) ? "object " + key+"_required" : key+"_required")) : ((type == 3) ? "array " + key+"_optional" : ((type == 4) ? "object " + key+"_optional" : key+"_optional"));
+            if(type == 1){
+                i.addEventListener("keypress", function(event) {
+                    if(event.charCode < 48 || event.charCode > 57) event.preventDefault();
+                });
+            }
+            i.addEventListener("keyup", function(event){
+                CONTROLLER["logAnalyticElement"](event,key);
+            });
+        
+
         l.className = "menu_item_select_other-input";
         l.appendChild(i);
 
@@ -248,6 +286,53 @@ var SETUP = {
             }
         }
         document.addEventListener("click",SETUP.closeAllDropdowns);
+    },
+    setupAnalyticInputs: function(){
+        /*-----------------------------------------------------------------------*/
+        /*-------- Function called to setup analytic adapter input fields -------*/
+        /*-----------------------------------------------------------------------*/
+        for (const key in ANALYTICINPUTS) {
+            var el = document.getElementById(key),c = 0;
+            for(const attr in ANALYTICINPUTS[key]){
+                if(attr!="title"){
+                    var container = document.createElement("DIV"), title = document.createElement("SPAN"), label;
+                    container.className = "menu_item_select_other-custom-contain-input "+key;
+                    title.className = "menu_item_select_other-custom-title";
+                    title.innerHTML = ANALYTICINPUTS[key][attr].name; 
+                    if(ANALYTICINPUTS[key][attr].type == 5){
+                        label = SETUP.createDropdownItem(key,ANALYTICINPUTS[key][attr].code,ANALYTICINPUTS[key][attr].vals,ANALYTICINPUTS[key][attr].required);
+                    }
+                    else if(ANALYTICINPUTS[key][attr].type == 2){
+                        label = SETUP.createCheckboxItem(key,ANALYTICINPUTS[key][attr].code,ANALYTICINPUTS[key][attr].required);
+                    }else{
+                        label = SETUP.createInputItem(key,ANALYTICINPUTS[key][attr].code,ANALYTICINPUTS[key][attr].type, ANALYTICINPUTS[key][attr].required);
+                    }
+
+                    label = SETUP.createAnalyticInput(key,ANALYTICINPUTS[key][attr].code,ANALYTICINPUTS[key][attr].type, ANALYTICINPUTS[key][attr].required);
+
+                    container.appendChild(title);
+                    container.appendChild(label);
+
+                    if(ANALYTICINPUTS[key][attr].code.match(/provider/i)) container.style="display:none;";
+
+                    if(ANALYTICINPUTS[key][attr].required){
+                        el.appendChild(container);
+                    }else{
+                        if(c == 0){
+                            var o = document.createElement("DIV"), ot = document.createElement("DIV");
+                            o.className = "menu_item_select_other-custom-optional";
+                            o.id = key + "-optional";
+                            ot.className = "menu_item_select_other-custom-section-title";
+                            ot.innerHTML = "OPTIONAL";
+                            o.appendChild(ot);
+                            el.appendChild(o);
+                            c++;
+                        }
+                        document.getElementById(key + "-optional").appendChild(container);
+                    }
+                }
+            }
+        }
     },
  	resetCachedInputs: function(){
  		/*-----------------------------------------------------------------------*/
