@@ -290,6 +290,13 @@ var BUILD = {
         }
         return (f.length == 0) ? null : f;
     },
+    matchKey: function(obj,str){
+        var hasKey = Object.keys(obj).some(function(key) {
+            var t = new RegExp(str,"i");
+            return t.test(key);
+        });
+        return hasKey;
+    },
     getBidders: function(obj,val,header,bidder) {
     	/*-----------------------------------------------------------------------*/
 	    /*--------------- Function called to build bidder objects ---------------*/
@@ -302,10 +309,7 @@ var BUILD = {
             var count = obj.bids.length;
             for (var j = 0; j < count; j++) {
                 if (obj.bids[j].hasOwnProperty("bidder") && obj.bids[j].bidder == BIDDERS[b].code) {
-                    if(BIDDERS[b].code.match(/^ix/i)&&header.match(/size/i)&&obj.bids[j].params.hasOwnProperty("size")){
-                        console.log("COMPARE");
-                        console.log(obj.bids[j].params.size.toString().replace(/( |,|x)/i,""));
-                        console.log(val.toString().replace(/( |,|x)/i,""));
+                    if(BIDDERS[b].code.match(/^ix/i)&&header.match(/size/i)&&BUILD.matchKey(obj.bids[j].params,"size")){
                         var temp = { bidder: BIDDERS[b].code, params: {} };
                         obj.bids.push(temp);
                         obj.bids[obj.bids.length - 1].params[header] = val.match(/\{.+:.+\}/gi) ? BUILD.buildObject(val) : (val.match(/,/gi) ? BUILD.buildArray(val,true) : BUILD.buildArray(val,false));
