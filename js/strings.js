@@ -1,9 +1,9 @@
 var STRINGS = {
-	arrToString : function(arr,f) {
+	arrToString : function(arr,f,ix) {
     	/*-----------------------------------------------------------------------*/
     	/*-------- Function called to convert array to string for output --------*/
     	/*-----------------------------------------------------------------------*/
-	    var str = '[',tab="";
+	    var str = (ix) ? '' : '[',tab="";
 	    for(var i = 0; i < f; i++){
 	    	tab+="\t";
 	    }
@@ -31,10 +31,10 @@ var STRINGS = {
 		        }
 	        }
 	    }
-	    str+="]";
+	    str+= (ix) ? "" : "]";
 	    return str;
 	},
-	objToString : function(obj,f) {
+	objToString : function(obj,f,ix) {
     	/*-----------------------------------------------------------------------*/
     	/*-------- Function called to convert object to string for output -------*/
     	/*-----------------------------------------------------------------------*/
@@ -52,10 +52,14 @@ var STRINGS = {
 	        	
 	        	var t = Number(obj[p]);
 
-	        	if( Array.isArray(obj[p])){
+	        	if(Array.isArray(obj[p])){
 	        		//If value is an array, setup output with a return from passing 
 	        		//array to array string constructor function
-	        		str += tab + p + ':' + STRINGS.arrToString(obj[p],f+1) + s1 + '\n';
+	        		str += tab + p + ':' + ((ix) ? STRINGS.arrToString(obj[p],f+1,true) : STRINGS.arrToString(obj[p],f+1)) + s1 + '\n';
+	        	}else if(typeof obj[p] == "object"&&((obj.hasOwnProperty("bidder")&&obj.bidder=="ix")||ix)){
+	        		//If value is an object, setup output with a return from passing 
+	        		//object to object string constructor function
+	        		str += tab + p + ':' + STRINGS.objToString(obj[p],f+1,true) + '\n';
 	        	}else if(typeof obj[p] == "object"){
 	        		//If value is an object, setup output with a return from passing 
 	        		//object to object string constructor function

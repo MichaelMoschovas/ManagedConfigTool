@@ -208,7 +208,15 @@ var BUILD = {
                     } else if (a[0][key] != "") {
                         //If value exists and top header for cell is not blank, construct new bidder
                         //object with parameter or add paramter to existing bidder object
-                        obj = BUILD.getBidders(obj,a,key,i);
+                        if(a[0][key].match(/^(ix$|index)/i)&&a[1][key].match(/size/i)&&a[i][key].match(/,/gi)){
+                            var sizes = a[i][key].replace(/\[/gi,"").replace(/\]/gi,"").split(",");
+                            for(var j = 0; j < sizes.length; j++){
+                                obj = BUILD.getBidders(obj,sizes[j],a[1][key],a[0][key]);
+                            }
+                        }else{
+                            obj = BUILD.getBidders(obj,a[i][key],a[1][key],a[0][key]);
+                        }
+                        
                         CONTROLLER.addBidder(a[0][key]);
                     } else if (a[1][key].match(/Div.ID/gi)) {
                         //Add div id
@@ -237,6 +245,7 @@ var BUILD = {
     	/*-----------------------------------------------------------------------*/
 	    /*----- Function called to check required bidder params are defined -----*/
 	    /*-----------------------------------------------------------------------*/
+
     	var fail = 0;
         if (!obj.hasOwnProperty("bids")) {
             fail++;
@@ -265,7 +274,13 @@ var BUILD = {
         for (var j = 0; j < b.parameters.length; j++) {
             var m = 0;
             for (var key in obj.params) {
+                var test = new RegExp(b.parameters[j],"gi");
                 if (key == b.parameters[j]&&obj.params[key]!="") m++;
+                else if(key.match(test)&&obj.params[key]!=""){
+                    m++;
+                    obj.params[b.parameters[j]] = obj.params[key];
+                    delete obj.params[key];
+                }
             }
             if (m == 0 && f.length == 0) {
                 f = [p, obj.bidder, [b.parameters[j]]];
@@ -275,30 +290,45 @@ var BUILD = {
         }
         return (f.length == 0) ? null : f;
     },
-    getBidders: function(obj,a,key,i) {
+    getBidders: function(obj,val,header,bidder) {
     	/*-----------------------------------------------------------------------*/
 	    /*--------------- Function called to build bidder objects ---------------*/
 	    /*------ as well as checking to make sure bidder exists in library ------*/
 	    /*-----------------------------------------------------------------------*/
-        var b = a[0][key].toLowerCase();
+        var b = bidder.toLowerCase();
         if (BIDDERS.hasOwnProperty(b)) {
             if (!obj.hasOwnProperty("bids")) obj.bids = [];
             var c = false;
-            for (var j = 0; j < obj.bids.length; j++) {
+            var count = obj.bids.length;
+            for (var j = 0; j < count; j++) {
                 if (obj.bids[j].hasOwnProperty("bidder") && obj.bids[j].bidder == BIDDERS[b].code) {
-                    c = true;
-                    obj.bids[j].params[a[1][key]] = a[i][key].match(/\{.+:.+\}/gi) ? BUILD.buildObject(a[i][key]) : (a[i][key].match(/,/gi) ? BUILD.buildArray(a[i][key],true) : BUILD.buildArray(a[i][key],false));
+                    if(BIDDERS[b].code.match(/^ix/i)&&header.match(/size/i)&&obj.bids[j].params.hasOwnProperty("size")){
+                        console.log("COMPARE");
+                        console.log(obj.bids[j].params.size.toString().replace(/( |,|x)/i,""));
+                        console.log(val.toString().replace(/( |,|x)/i,""));
+                        var temp = { bidder: BIDDERS[b].code, params: {} };
+                        obj.bids.push(temp);
+                        obj.bids[obj.bids.length - 1].params[header] = val.match(/\{.+:.+\}/gi) ? BUILD.buildObject(val) : (val.match(/,/gi) ? BUILD.buildArray(val,true) : BUILD.buildArray(val,false));
+                        for(var key in obj.bids[j].params){
+                            if(!key.match(/size/i)) obj.bids[obj.bids.length - 1].params[key] = obj.bids[j].params[key];
+                        }
+                        c = true;
+                        break;
+                    }else{
+                        c = true;
+                        obj.bids[j].params[header] = val.match(/\{.+:.+\}/gi) ? BUILD.buildObject(val) : (val.match(/,/gi) ? BUILD.buildArray(val,true) : BUILD.buildArray(val,false));
+                    }
                 }
             }
             if (!c) {
                 var temp = { bidder: BIDDERS[b].code, params: {} };
                 obj.bids.push(temp);
-                obj.bids[obj.bids.length - 1].params[a[1][key]] = a[i][key].match(/\{.+:.+\}/gi) ? BUILD.buildObject(a[i][key]) : (a[i][key].match(/,/gi) ? BUILD.buildArray(a[i][key],true) : BUILD.buildArray(a[i][key],false));
+                obj.bids[obj.bids.length - 1].params[header] = val.match(/\{.+:.+\}/gi) ? BUILD.buildObject(val) : (val.match(/,/gi) ? BUILD.buildArray(val,true) : BUILD.buildArray(val,false));
                 CONTROLLER.preSelectBidder(BIDDERS[b].code);
-                if(b.match(/rubicon/i) && a[1][key].match(/accountId/i) && CONTROLLER.account == ""){
-                    CONTROLLER.account = a[i][key];
+                if(b.match(/rubicon/i) && header.match(/accountId/i) && CONTROLLER.account == ""){
+                    CONTROLLER.account = val;
                     Array.from(document.querySelectorAll('.rubicon-account-id')).forEach(function(el) {
-                        el.innerHTML=a[i][key];
+                        el.innerHTML=val;
                     });
                 }
             }
@@ -312,7 +342,6 @@ var BUILD = {
 	    /*---------- Function called to create size array for pattern -----------*/
 	    /*-----------------------------------------------------------------------*/
     	var sArr = a[i][key].match(/,/gi) ? BUILD.buildArray(a[i][key],true) : BUILD.buildArray(a[i][key],false), c = false;
-        console.log(obj);
 		if (a[1][key].match(/1024/gi)) {
 			obj.sizes = sArr;
 		} else if (!obj.hasOwnProperty("sizes")) {

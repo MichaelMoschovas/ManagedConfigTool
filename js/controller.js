@@ -54,7 +54,7 @@ var CONTROLLER = {
 		CONTROLLER.valid = false;
         CONTROLLER.prebidserver= false;
         CONTROLLER.currency= false;
-		MESSAGE.reset();
+		//MESSAGE.reset();
     },
     readFile: function(e){
     	/*-----------------------------------------------------------------------*/
@@ -279,7 +279,6 @@ var CONTROLLER = {
                  CONTROLLER.analyticInput[i][Object.keys(CONTROLLER.analyticInput[i])[0]]["options"][id] = event.target.value;
             }
         }
-        console.log(CONTROLLER.analyticInput);
         CONTROLLER.formCheck();
     },
     logModules: function(el,t){
@@ -438,7 +437,7 @@ var CONTROLLER = {
    			document.getElementById("download_image").src = "images/download-unavailable.png";
    			if(document.getElementById("errorlog").parentNode.style.display=="block"){
                 //CONTROLLER.setFocus(err[1],false);
-	   			MESSAGE.reset();
+	   			//MESSAGE.reset();
 			}
    		}
    	},
@@ -679,14 +678,17 @@ var CONTROLLER = {
     	/*-----------------------------------------------------------------------*/
     	//Check that array is at least length 3
     	if(a.length < 3) return false;
-    	var c = 0;
+    	var c = 0,d=0;
     	//Loop through array and match header values
     	//Must equal at least 5 matches to pass
     	for(var i = 0; i < a[1].length; i++){
-    		var regex = /(Sizes)|(DFP.Ad.Unit.Name)|(Div.ID)/gi;
+    		var regex = /(Sizes)/gi;
+            var regex2 = /(DFP.Ad.Unit.Name)|(Div.ID)/gi;
     		if(a[1][i].match(regex)) c++;
+            if(a[1][i].match(regex2)) d++;
     	}
-    	return (c >= 3) ?  true : false;
+
+    	return (c >= 1 && d >=1) ?  true : false;
     },
     constructJS : function(){
     	return (OUTPUT.init());
