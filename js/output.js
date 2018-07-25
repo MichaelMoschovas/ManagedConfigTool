@@ -29,7 +29,7 @@ var OUTPUT = {
 		/*-----------------------------------------------------------------------*/
 	    /*---------------- Function called to set version property --------------*/
 	    /*-----------------------------------------------------------------------*/
-		var v = document.getElementById("version-value").checked ? "stable-1-x" : "0-34-x";
+		var v = document.getElementById("version-value").checked ? "1.16" : "0.34.16";
 		OUTPUT.version = OUTPUT.version.replace(/\{VERSION\}/gi,v);
 	},
 	setMods : function(obj){
