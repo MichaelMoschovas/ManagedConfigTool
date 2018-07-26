@@ -107,21 +107,21 @@ var OUTPUT = {
     	//Loop through buckets and add each bucket to granularity string
     	//Each bucket includes precision, min, max, and increment
     	for(var i =0; i < CONTROLLER.precision.value.buckets.length; i++){
-    		str+="\n{\n";
+    		str+="\n\t\t\t{\n";
     		for(var key in CONTROLLER.precision.value.buckets[i]){
 	    		for(var j =0; j < CONTROLLER.precision.value.buckets[i][key][0].length; j++){
 		    		switch(j){
 		    			case 0:
-		    				str += '"precision" : '+CONTROLLER.precision.value.buckets[i][key][0][j]+',\n';
+		    				str += '\t\t\t\t"precision" : '+CONTROLLER.precision.value.buckets[i][key][0][j]+',\n';
 		    				break;
 		    			case 1:
-		    				str += '"min" : '+CONTROLLER.precision.value.buckets[i][key][0][j]+',\n';
+		    				str += '\t\t\t\t"min" : '+CONTROLLER.precision.value.buckets[i][key][0][j]+',\n';
 		    				break;
 		    			case 2:
-		    				str += '"max" : '+CONTROLLER.precision.value.buckets[i][key][0][j]+',\n';
+		    				str += '\t\t\t\t"max" : '+CONTROLLER.precision.value.buckets[i][key][0][j]+',\n';
 		    				break;
 		    			case 3:
-		    				str += '"increment" : '+CONTROLLER.precision.value.buckets[i][key][0][j];
+		    				str += '\t\t\t\t"increment" : '+CONTROLLER.precision.value.buckets[i][key][0][j];
 		    				break;
 		    			default:
 		    				break;
@@ -129,7 +129,7 @@ var OUTPUT = {
 		    	}
 		    	
 		    }
-	    	str+="\n}\n";
+	    	str+= (i+1!=CONTROLLER.precision.value.buckets.length&&CONTROLLER.precision.value.buckets.length>1) ? "\n\t\t\t}," : "\n\t\t\t}";
     	}
     	
     	OUTPUT.buckets = OUTPUT.buckets.replace(/\{BUCKETS\}/gi,str);
@@ -189,9 +189,10 @@ var OUTPUT = {
 		p.modules ='\t"modules": [\n {MODULES} \t],';
 		p.que ='\n\t"que": function() {\n\t\trequire("../lib/hpbv2.js")(pbjs);\n\t\tpbjs.rp.addAdunitPatterns([ {PATTERNS} \t\t]);\n';
 		//p.que ='\n"que": function() {\nvar adUnits = [\n {PATTERNS} ];\n';
-		p.custom = '\t\tconst customConfigObject = { {CUSTOM} \t\t};\n';
+		p.custom = '\t\tconst customConfigObject = { {CUSTOM} };\n';
 		p.config ='\t\tpbjs.setConfig({\n {CONFIG} \n\t\t});';
 		p.enableAnalytics= '\n\t\tpbjs.enableAnalytics: ([ {ANALYTICINPUT} ]);';
-		p.granularity = '\t\t\tpriceGranularity: {GRANULARITY}'
+		p.granularity = '\t\t\tpriceGranularity: {GRANULARITY}';
+		p.buckets = '"buckets": [ {BUCKETS} \n\t\t]';
 	}
 }
